@@ -37,7 +37,7 @@ const RELOG_CLIENT = 'RELOG_CLIENT'
 const UPDATE_ALIASES = 'UPDATE_ALIASES'
 const UPDATE_ADDRESS_ALIAS = 'UPDATE_ADDRESS_ALIAS'
 const SET_NEW_CLIENT = 'SET_NEW_CLIENT'
-
+const SET_PRICE_LIST = 'SET_PRICE_LIST'
 Vue.use(Vuex)
 
 const state = {
@@ -492,6 +492,9 @@ const mutations = {
   /*                               PRICE MUTATIONS                              */
   /* -------------------------------------------------------------------------- */
 
+  [SET_PRICE_LIST](state, payload) {
+    state.priceList = payload
+  },
   [SET_ROUTES_PRICE](state, payload) {
     state.priceList.routes = payload
   },
