@@ -27,14 +27,8 @@
                 br
                 | (+15% стоимости)
           v-col(cols='12', lg='6', md='6')
-            v-switch(label='Оптимизировать маршрут (Бесплатно)', v-model='completeAddress.optimizeRoute')
-              template(v-slot:label, v-if='!isMobile')
-                | Оптимизировать маршрут
-                br
-                | (Бесплатно)
-          v-col(cols='12', lg='6', md='6')
             v-radio-group(v-model='completeAddress.whoPays')
-              v-radio(label='Из выручки', value='Из выручки')
+              v-radio(label='Из выручки', value='Из выручки', :disabled='!isBuyoutExists')
               v-radio(label='Отправитель', value='Отправитель')
               v-radio(label='Получатель', value='Получатель')
               v-radio(label='Заказчик', value='Заказчик')
@@ -58,14 +52,24 @@ export default {
     completeAddress: {
       quick: false,
       car: false,
-      optimizeRoute: false,
-      whoPays: 'Из выручки',
+      whoPays: 'Заказчик',
       comment: '',
     },
   }),
 
   computed: {
-    ...mapState(['priceList', 'addressInfo']),
+    isBuyoutExists() {
+      return (
+        _.reduce(
+          this.addressList,
+          (a, n) => {
+            return a + n.fields.buyout
+          },
+          0
+        ) > 0
+      )
+    },
+    ...mapState(['priceList', 'addressInfo', 'addressList']),
   },
 
   methods: {

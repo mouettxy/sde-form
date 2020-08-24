@@ -2,13 +2,19 @@ import Vue from 'vue'
 import axios from 'axios'
 
 let config = {
-  baseURL: 'https://api.sde.ru.com',
+  baseURL: 'https://api.sde.ru.com/api/v2/',
+  /*   proxy: 'https://api.sde.ru.com', */
+  timeout: 10000,
+  validateStatus: status => {
+    return status < 500
+  },
   headers: {
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 }
 
-let configDadata = {
+let dadataConfig = {
   baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest',
   headers: {
     common: {
@@ -20,7 +26,7 @@ let configDadata = {
   },
 }
 
-let configGeocoder = {
+let geocoderConfig = {
   baseUrl: 'http://search.maps.sputnik.ru/search',
   get: {
     'Content-Type': 'application/json',
@@ -28,35 +34,33 @@ let configGeocoder = {
 }
 
 const _axios = axios.create(config)
-const _axiosDadata = axios.create(configDadata)
-const _axiosGeocoder = axios.create(configGeocoder)
+const _dadata = axios.create(dadataConfig)
+const _geocoder = axios.create(geocoderConfig)
 
 _axios.interceptors.request.use(
   function(config) {
-    console.log(`sending request to ${config.baseURL}`)
+    console.debug(`sending request to ${config.baseURL}`)
     return config
   },
   function(error) {
-    console.log('error when sending request', error)
+    console.debug('error when sending request', error)
     return Promise.reject(error)
   }
 )
 
 _axios.interceptors.response.use(
   function(response) {
-    console.log('getting response', response)
-    return response
+    console.debug('getting response', response)
+    return { data: response.data, status: response.status }
   },
   function(error) {
-    console.log('error when response', error)
+    console.debug('error when response', error)
     return Promise.reject(error)
   }
 )
 
 Vue.prototype.$http = _axios
-Vue.prototype.$http.$address = _axiosDadata
-Vue.prototype.$http.$geocoder = _axiosGeocoder
 
 export const http = _axios
-export const address = _axiosDadata
-export const geocoder = _axiosGeocoder
+export const dadata = _dadata
+export const geocoder = _geocoder

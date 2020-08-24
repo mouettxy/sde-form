@@ -15,14 +15,16 @@
           )
         v-col(cols='12', lg='6', md='6')
           v-datetime-picker(
-            label='Когда забрать/Получить',
+            label='Когда забрать/Доставить',
             :textFieldProps='{ "prepend-inner-icon": $icons.date, color: color, "v-model": address.datetime }',
-            :datePickerProps='{ locale: "ru", "header-color": "accent" }',
+            :datePickerProps='{ locale: "ru-ru", "header-color": "accent" }',
             :timePickerProps='{ format: "24hr", "header-color": "accent" }',
             dateFormat='dd.MM.yyyy',
+            timeFormat='HH:mm',
             v-model='date',
             clearText='Сбросить',
-            okText='Применить'
+            okText='Применить',
+            @input='onDateChange'
           )
             template(slot='dateIcon')
               v-icon {{$icons.calendar}}
@@ -91,6 +93,7 @@ export default {
 
   data: () => ({
     date: undefined,
+    isManuallyModified: false,
     valid: true,
     address: {
       phone: '',
@@ -108,10 +111,44 @@ export default {
   computed: {
     ...mapState(['addressList']),
     ...mapGetters(['addressById']),
+    addressDate() {
+      return this.address.datetime
+    },
   },
 
   methods: {
     ...mapMutations(['UPDATE_ADDRESS_FIELDS']),
+
+    getTimeOffset() {
+      let index = _.findIndex(this.addressList, { id: this.addr_id })
+      let lastIndex = _.findLastIndex(this.addressList)
+      let size = _.size(this.addressList)
+
+      if (size === 1 || index === 0) {
+        return 20
+      }
+
+      if (size === 2 && index === 1) {
+        return 20 + 35
+      }
+
+      if (index === lastIndex) {
+        return 20 + 35 + (size - 2) * 25
+      }
+
+      return 20 + index * 25
+    },
+    updateTimeField() {
+      let m = moment()
+        .locale('ru')
+        .add(this.getTimeOffset(), 'm')
+      this.date = `${m.format('L')} ${m.format('LT')}`
+      this.address.datetime = `${m.format('L')} ${m.format('LT')}`
+      return `${m.format('L')} ${m.format('LT')}`
+    },
+    onDateChange() {
+      this.isManuallyModified = true
+    },
   },
 
   watch: {
@@ -129,16 +166,15 @@ export default {
   },
 
   mounted() {
-    this.address = _.cloneDeep(this.addressById(this.addr_id).fields)
+    this.updateTimeField()
 
-    const date = moment()
-      .locale('ru')
-      .format('L')
-    const time = moment('20.00', 'HH:mm')
-      .locale('ru')
-      .format('LT')
-    const datetime = `${date} ${time}`
-    this.date = datetime
+    this.address = this.addressById(this.addr_id).fields
+
+    setInterval(() => {
+      if (!this.isManuallyModified) {
+        this.updateTimeField()
+      }
+    }, 1000)
 
     this.debouncedHandler = _.debounce(this.UPDATE_ADDRESS_FIELDS, 500)
   },

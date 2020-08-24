@@ -55,6 +55,7 @@ export default {
 
 <style lang="stylus" scoped>
 .price-label__main
+  z-index 1000
   position absolute
   top 50%
   right 0
@@ -67,8 +68,9 @@ export default {
     font-size 1.5rem
 
 .price-label-m__main
+  z-index 1000
   position absolute
-  top calc(100% - 60px)
+  top calc(100% - 120px)
   left 0
   padding 6px
   background #ffcc01

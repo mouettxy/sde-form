@@ -1,9 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { http } from '../plugins/axios'
-import _, { update, over } from 'lodash'
-import price from './price'
+
+import _ from 'lodash'
 import moment from 'moment'
+
+import { ordersApi, clientApi } from '@/api/'
+import { unicornBus } from '@/main'
+import endpoints from '@/api/endpoints'
+
+import price from './price'
 
 const ADD_ADDRESS = 'ADD_ADDRESS'
 const ADD_CLIENT = 'ADD_CLIENT'
@@ -23,6 +28,15 @@ const INIT_COMPLETE_ADDRESS_FIELDS = 'INIT_COMPLETE_ADDRESS_FIELDS'
 const UPDATE_COMPLETE_ADDRESS_FIELDS = 'UPDATE_COMPLETE_ADDRESS_FIELDS'
 const RESET_FORM = 'RESET_FORM'
 const ADD_ORDER = 'ADD_ORDER'
+const UPDATE_ADDRESSES_ORDER = 'UPDATE_ADDRESSES_ORDER'
+const SEND_ORDER = 'SEND_ORDER'
+const SAVE_ORDER = 'SAVE_ORDER'
+const SOFTRESET_STATE = 'SOFTRESET_STATE'
+const SET_ALIASES = 'SET_ALIASES'
+const RELOG_CLIENT = 'RELOG_CLIENT'
+const UPDATE_ALIASES = 'UPDATE_ALIASES'
+const UPDATE_ADDRESS_ALIAS = 'UPDATE_ADDRESS_ALIAS'
+const SET_NEW_CLIENT = 'SET_NEW_CLIENT'
 
 Vue.use(Vuex)
 
@@ -33,6 +47,7 @@ const state = {
   priceList: undefined,
   route: undefined,
   isNewClient: false,
+  moreThanSixAddresses: false,
 }
 
 const getters = {
@@ -67,6 +82,94 @@ const getters = {
 }
 
 const actions = {
+  /* -------------------------------------------------------------------------- */
+  /*                               CLIENT ACTIONS                               */
+  /* -------------------------------------------------------------------------- */
+
+  async [SET_NEW_CLIENT]({ commit }, name) {
+    commit(RESET_FORM)
+    commit(ADD_CLIENT, name)
+    commit(INIT_COMPLETE_ADDRESS_FIELDS, name)
+  },
+
+  async [UPDATE_ALIASES]({ state, commit }) {
+    try {
+      const responseAliases = await clientApi.getAliases(state.client.CLIENT)
+      if (responseAliases.status === 200) {
+        commit(SET_ALIASES, responseAliases.data)
+        return true
+      }
+      return false
+    } catch (e) {
+      console.debug(e)
+      return false
+    }
+  },
+
+  async [RELOG_CLIENT]({ state, commit }, id = undefined) {
+    try {
+      id = id || state.client.CLIENT
+
+      const response = await clientApi.getClient(id)
+
+      if (response.status === 200) {
+        const responseAliases = await clientApi.getAliases(id)
+        const responseOrders = await clientApi.getAddresses(id)
+
+        response.data.aliases = responseAliases.data || ''
+        response.data.saved_orders = responseOrders.data || ''
+
+        commit(RELOG_CLIENT, response.data)
+
+        return true
+      }
+      return false
+    } catch (e) {
+      console.debug(e)
+      return false
+    }
+  },
+
+  [SAVE_ORDER]({ state }, data) {
+    if (!state.isNewClient) {
+      clientApi.saveOrder(data.state, state.client.CLIENT)
+    }
+  },
+  async [SEND_ORDER]({ state, dispatch }, payload) {
+    if (payload.needSave) {
+      dispatch(SAVE_ORDER, { state: payload.state })
+    }
+
+    const id = await ordersApi.sendOrder(payload.results.raw, payload.results.processed, payload.results.modern)
+    let client =
+      typeof state.client === 'string'
+        ? localStorage.getItem('rememberedUserID')
+          ? localStorage.getItem('rememberedUserID')
+          : false
+        : state.client.CLIENT
+
+    if (id) {
+      if (payload.needSave) {
+        unicornBus.$emit('order-sended-saved', id)
+      } else {
+        unicornBus.$emit('order-sended', id)
+      }
+
+      if (client) {
+        dispatch(GET_CLIENT, client, true)
+      } else {
+        dispatch(RESET_FORM)
+      }
+    } else {
+      console.log(id)
+      unicornBus.$emit('order-sended-error')
+      if (client) {
+        dispatch(GET_CLIENT, client, true)
+      } else {
+        dispatch(RESET_FORM)
+      }
+    }
+  },
   [ADD_ORDER]({ commit }, order) {
     commit(ADD_ORDER, order)
   },
@@ -125,28 +228,43 @@ const actions = {
    * @param {number, string} Client id to search
    * @return {number} Status code of response. Possible values [200, 204, 500].
    */
-  async [GET_CLIENT]({ commit }, id) {
-    const getClient = `/api/v2/client/${id}`
-    const getAliases = `/api/v2/client/${id}/aliases`
-    const getOrders = `/api/v2/client/${id}/orders/`
-    const response = await http.get(getClient)
+  async [GET_CLIENT]({ commit, dispatch, state }, id, completelyReset, softReset) {
+    const response = await clientApi.getClient(id)
     if (response.status === 200) {
-      const responseAliases = await http.get(getAliases)
-      const responseOrders = await http.get(getOrders)
+      const responseAliases = await clientApi.getAliases(id)
+      const responseOrders = await clientApi.getAddresses(id)
 
       response.data.aliases = responseAliases.data || ''
       response.data.saved_orders = responseOrders.data || ''
 
-      commit(RESET_STATE)
+      if (completelyReset) {
+        commit(RESET_FORM)
+      } else if (softReset) {
+        commit(SOFTRESET_STATE)
+      } else {
+        commit(RESET_STATE)
+      }
+
       commit(ADD_CLIENT, response.data)
       commit(INIT_COMPLETE_ADDRESS_FIELDS, response.data)
+      if (localStorage.getItem('fillDefaultClientAddress') === 'true') {
+        let address = _.filter(state.client.aliases, { name: 'От нас / К нам' })
+        address = { ...address[0], isAlias: true, completed: false }
+        dispatch(ADD_ADDRESS, address)
+      }
+
       return 200
     } else if (response.status === 204) {
-      commit(RESET_STATE)
+      if (completelyReset) {
+        commit(RESET_FORM)
+      } else {
+        commit(RESET_STATE)
+      }
       commit(ADD_CLIENT, id)
       commit(INIT_COMPLETE_ADDRESS_FIELDS, response.data)
       return 204
     } else {
+      commit(RESET_FORM)
       console.error('Error on load client ', response.data)
       return 500
     }
@@ -161,7 +279,10 @@ const actions = {
   [ADD_ADDRESS]({ commit }, address) {
     commit(ADD_ADDRESS, address)
     commit(CALC_ADDRESS_ID)
-    commit(INIT_ADDRESS_FIELDS)
+    console.log(address)
+    if (!address.fields) {
+      commit(INIT_ADDRESS_FIELDS)
+    }
   },
 
   /**
@@ -202,8 +323,148 @@ const actions = {
 }
 
 const mutations = {
+  /* -------------------------------------------------------------------------- */
+  /*                              CLIENT MUTATIONS                              */
+  /* -------------------------------------------------------------------------- */
+
+  [ADD_CLIENT](state, payload) {
+    if (typeof payload === 'string') {
+      state.client = payload
+      state.isNewClient = true
+    } else {
+      state.client = payload
+      state.isNewClient = false
+    }
+  },
+  [RESET_CLIENT](state) {
+    state.client = undefined
+    state.isNewClient = false
+  },
+  [SET_ALIASES](state, payload) {
+    state.client.aliases = payload
+  },
+  [RELOG_CLIENT](state, payload) {
+    state.client = payload
+  },
+
+  /* -------------------------------------------------------------------------- */
+  /*                              ADDRESS MUTATIONS                             */
+  /* -------------------------------------------------------------------------- */
+
+  [UPDATE_ADDRESSES_ORDER](state, addresses) {
+    state.addressList = addresses
+  },
+  [UPDATE_COMPLETE_ADDRESS_FIELDS](state, paylaod) {
+    state.addressInfo = paylaod
+  },
+  [INIT_COMPLETE_ADDRESS_FIELDS](state, payload) {
+    let base = {
+      quick: false,
+      car: false,
+      whoPays: 'Из выручки',
+      comment: '',
+    }
+    if (typeof payload === 'string') {
+      state.addressInfo = base
+    } else {
+      base.whoPays = payload.payment_who ? payload.payment_who : 'Из выручки'
+      state.addressInfo = base
+    }
+  },
+  [UPDATE_ADDRESS_ALIAS](state, payload) {
+    let address = _.filter(state.addressList, { id: payload.id })[0]
+    address.isAlias = true
+  },
+  [UPDATE_ADDRESS_FIELDS](state, payload) {
+    let address = _.filter(state.addressList, { id: payload.id })[0]
+    if (address) {
+      address.fields = payload.address
+    }
+  },
+  [INIT_ADDRESS_FIELDS](state) {
+    let address = _.last(state.addressList)
+    const date = moment()
+      .locale('ru')
+      .format('L')
+    const time = moment('20.00', 'HH:mm')
+      .locale('ru')
+      .format('LT')
+    const datetime = `${date} ${time}`
+    const defaultFields = {
+      phone: '',
+      datetime,
+      bundles: 0,
+      comment: '',
+      buyin: 0,
+      buyout: 0,
+      takeIn: false,
+      takeOut: false,
+      bus: false,
+    }
+    if (address.isAlias) {
+      if (address.name == 'От нас / К нам') {
+        let phone = _.clone(state.client.customer_phone)
+        if (phone[0] == '8' || phone[0] == '7') {
+          phone = phone.slice(1)
+        }
+        if (phone[0] + phone[1] == '+7') {
+          phone = phone.slice(2)
+        }
+        phone = phone.replace(/(\d\d\d)(\d\d\d)(\d\d)(\d\d)/, '($1) $2-$3-$4')
+        address.fields = {
+          phone: phone,
+          datetime,
+          bundles: 0,
+          buyin: 0,
+          buyout: 0,
+          comment: state.client.customer_adress_comment,
+          takeIn: state.client.always_in === '1' ? true : false,
+          takeOut: state.client.always_out === '1' ? true : false,
+          bus: false,
+        }
+      } else {
+        address.fields = defaultFields
+      }
+    } else {
+      address.fields = defaultFields
+    }
+  },
+  [DEL_ADDRESS](state, payload) {
+    state.addressList = _.filter(state.addressList, e => {
+      return e.id !== payload
+    })
+
+    if (state.addressList.length === 0) {
+      state.addressList = undefined
+    }
+  },
+  [ADD_ADDRESS](state, payload) {
+    if (state.addressList) {
+      if (state.addressList.length > 5) {
+        state.moreThanSixAddresses = true
+      } else {
+        state.addressList.push(payload)
+        state.moreThanSixAddresses = false
+      }
+    } else {
+      state.addressList = [payload]
+      state.moreThanSixAddresses = false
+    }
+  },
+  [CALC_ADDRESS_ID](state) {
+    let id = 1
+    _.each(state.addressList, address => {
+      address.id = id
+      id++
+    })
+  },
+
+  /* -------------------------------------------------------------------------- */
+  /*                           GLOBAL STATE MUTATIONS                           */
+  /* -------------------------------------------------------------------------- */
+
   [ADD_ORDER](state, order) {
-    state.addressList = order.addressList
+    state.addressList = unicornBus.setDateToAddresses('all', 0, order.addressList)
     state.addressInfo = order.addressInfo
     state.priceList = order.priceList
     state.route = order.route
@@ -216,24 +477,21 @@ const mutations = {
     state.route = undefined
     state.isNewClient = false
   },
-  [UPDATE_COMPLETE_ADDRESS_FIELDS](state, paylaod) {
-    state.addressInfo = paylaod
+  [RESET_STATE](state) {
+    state.client = undefined
+    state.addressList = undefined
+    state.priceList = undefined
+    state.route = undefined
+    state.isNewClient = false
   },
-  [INIT_COMPLETE_ADDRESS_FIELDS](state, payload) {
-    let base = {
-      quick: false,
-      car: false,
-      optimizeRoute: false,
-      whoPays: 'Из выручки',
-      comment: '',
-    }
-    if (typeof payload === 'string') {
-      state.addressInfo = base
-    } else {
-      base.whoPays = payload.payment_who ? payload.payment_who : 'Из выручки'
-      state.addressInfo = base
-    }
+  [SOFTRESET_STATE](state) {
+    state.client = undefined
   },
+
+  /* -------------------------------------------------------------------------- */
+  /*                               PRICE MUTATIONS                              */
+  /* -------------------------------------------------------------------------- */
+
   [SET_ROUTES_PRICE](state, payload) {
     state.priceList.routes = payload
   },
@@ -300,103 +558,13 @@ const mutations = {
       state.priceList = undefined
     }
   },
+
+  /* -------------------------------------------------------------------------- */
+  /*                               ROUTE MUTATIONS                              */
+  /* -------------------------------------------------------------------------- */
+
   [UPDATE_ROUTE](state, payload) {
     state.route = payload
-  },
-  [UPDATE_ADDRESS_FIELDS](state, payload) {
-    let address = _.filter(state.addressList, { id: payload.id })[0]
-    address.fields = payload.address
-  },
-  [INIT_ADDRESS_FIELDS](state) {
-    let address = _.last(state.addressList)
-    const date = moment()
-      .locale('ru')
-      .format('L')
-    const time = moment('20.00', 'HH:mm')
-      .locale('ru')
-      .format('LT')
-    const datetime = `${date} ${time}`
-    const defaultFields = {
-      phone: '',
-      datetime,
-      bundles: 0,
-      comment: '',
-      buyin: 0,
-      buyout: 0,
-      takeIn: false,
-      takeOut: false,
-      bus: false,
-    }
-    if (address.isAlias) {
-      if (address.name == 'От нас / К нам') {
-        let phone = _.clone(state.client.customer_phone)
-        if (phone[0] == '8' || phone[0] == '7') {
-          phone = phone.slice(1)
-        }
-        if (phone[0] + phone[1] == '+7') {
-          phone = phone.slice(2)
-        }
-        phone = phone.replace(/(\d\d\d)(\d\d\d)(\d\d)(\d\d)/, '($1) $2-$3-$4')
-        address.fields = {
-          phone: phone,
-          datetime,
-          bundles: 0,
-          buyin: 0,
-          buyout: 0,
-          comment: state.client.customer_adress_comment,
-          takeIn: state.client.always_in === '1' ? true : false,
-          takeOut: state.client.always_out === '1' ? true : false,
-          bus: false,
-        }
-      } else {
-        address.fields = defaultFields
-      }
-    } else {
-      address.fields = defaultFields
-    }
-  },
-  [DEL_ADDRESS](state, payload) {
-    state.addressList = _.filter(state.addressList, e => {
-      return e.id !== payload
-    })
-
-    if (state.addressList.length === 0) {
-      state.addressList = undefined
-    }
-  },
-  [ADD_ADDRESS](state, payload) {
-    if (state.addressList) {
-      state.addressList.push(payload)
-    } else {
-      state.addressList = [payload]
-    }
-  },
-  [CALC_ADDRESS_ID](state) {
-    let id = 1
-    _.each(state.addressList, address => {
-      address.id = id
-      id++
-    })
-  },
-  [ADD_CLIENT](state, payload) {
-    if (typeof payload === 'string') {
-      state.client = payload
-      state.isNewClient = true
-    } else {
-      state.client = payload
-      state.isNewClient = false
-    }
-  },
-  [RESET_CLIENT](state) {
-    state.client = undefined
-    state.isNewClient = false
-  },
-  [RESET_STATE](state) {
-    state.client = undefined
-    state.addressList = undefined
-    state.priceList = undefined
-    state.route = undefined
-    state.isNewClient = false
   },
 }
 

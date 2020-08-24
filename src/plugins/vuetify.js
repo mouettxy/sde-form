@@ -26,6 +26,11 @@ import {
   mdiInformation,
   mdiCheck,
   mdiContentSave,
+  mdiCursorMove,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiLock,
+  mdiLogin,
 } from '@mdi/js'
 import Vuetify, { VApp, VNavigationDrawer, VFooter, VToolbar, VFadeTransition } from 'vuetify/lib'
 import { ClickOutside, Intersect, Mutate, Resize, Ripple, Scroll, Touch } from 'vuetify/lib/directives'
@@ -55,6 +60,7 @@ Vue.use(DatetimePicker)
 
 const _icons = {
   mapMarker: mdiMapMarker,
+  move: mdiCursorMove,
   save: mdiContentSave,
   rub: mdiCurrencyRub,
   search: mdiMagnify,
@@ -78,7 +84,11 @@ const _icons = {
   takeOut: mdiTrayMinus,
   leftArrow: mdiArrowLeft,
   rightArrow: mdiArrowRight,
+  upArrow: mdiArrowUp,
+  downArrow: mdiArrowDown,
   check: mdiCheck,
+  password: mdiLock,
+  login: mdiLogin,
 }
 
 Vue.prototype.$icons = _icons
@@ -94,6 +104,7 @@ const vuetifyOpts = {
       dark: {
         primary: '#C79C00',
         accent: '#525252',
+        accent2: '#1E1E1E',
         secondary: '#E0E0E0',
         success: '#689f38',
         info: '#2196F3',

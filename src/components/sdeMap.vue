@@ -21,6 +21,70 @@ export default {
 
   methods: {
     ...mapActions(['UPDATE_ROUTE']),
+    getAndDisplayRoute(addresses) {
+      this.lastAddrsSize = _.size(addresses)
+      if (_.size(addresses) >= 2) {
+        const addrs = [...addresses]
+        let origin = addrs.shift()
+        origin = { lat: parseFloat(origin.lat), lng: parseFloat(origin.lon) }
+        let destination = addrs.pop()
+        destination = { lat: parseFloat(destination.lat), lng: parseFloat(destination.lon) }
+
+        let waypoints = []
+
+        if (_.size(addrs) > 0) {
+          waypoints = _.map(addrs, e => {
+            return { location: { lat: parseFloat(e.lat), lng: parseFloat(e.lon) } }
+          })
+        }
+        if (origin && destination) {
+          this.DirectionsService.route(
+            {
+              origin,
+              waypoints,
+              destination,
+              travelMode: 'WALKING',
+            },
+            (response, status) => {
+              if (status === 'OK' && response) {
+                this.DirectionsRenderer.setDirections(response)
+
+                // making route info object
+                let route = response.routes[0]
+                let legs = route.legs
+                let routeInfo = {
+                  routes: [],
+                  overallDistance: 0,
+                  overallTime: 0,
+                  overallTimeString: undefined,
+                }
+                _.each(legs, e => {
+                  let distance = _.round(e.distance.value / 1000, 1)
+                  let time = _.round((distance / 30) * 60)
+                  let timeString = time >= 60 ? `${_.round(time / 60)}ч. ${_.round(time % 60)} м.` : `${time} м.`
+                  routeInfo.routes.push({
+                    from: e.start_address,
+                    to: e.end_address,
+                    distance,
+                    time,
+                    timeString,
+                  })
+                  routeInfo.overallDistance += distance
+                  routeInfo.overallTime += time
+                  routeInfo.overallTimeString =
+                    routeInfo.overallTime >= 60
+                      ? `${_.round(routeInfo.overallTime / 60)}ч. ${_.round(routeInfo.overallTime % 60)} м.`
+                      : `${routeInfo.overallTime} м.`
+                })
+                this.UPDATE_ROUTE(routeInfo)
+              }
+            }
+          )
+        }
+      } else if (_.size(addresses) <= 0) {
+        this.UPDATE_ROUTE(undefined)
+      }
+    },
   },
 
   computed: {
@@ -138,113 +202,40 @@ export default {
         this.UPDATE_ROUTE(undefined)
       }
       if (_.size(addresses) !== this.lastAddrsSize) {
-        this.lastAddrsSize = _.size(addresses)
-        if (_.size(addresses) >= 2) {
-          const addrs = [...addresses]
-          let origin = addrs.shift()
-          origin = { lat: parseFloat(origin.lat), lng: parseFloat(origin.lon) }
-          let destination = addrs.pop()
-          destination = { lat: parseFloat(destination.lat), lng: parseFloat(destination.lon) }
-
-          let waypoints = []
-
-          if (_.size(addrs) > 0) {
-            waypoints = _.map(addrs, e => {
-              return { location: { lat: parseFloat(e.lat), lng: parseFloat(e.lon) } }
-            })
-          }
-          if (origin && destination) {
-            if (debug) {
-              const temp = {
-                routes: [
-                  {
-                    from: 'ул. имени Артюшкова, 15, Краснодар, Краснодарский край, Россия, 350016',
-                    to: 'ул. Северная, 7, Краснодар, Краснодарский край, Россия, 350004',
-                    distance: 8.6,
-                    time: 17,
-                    timeString: '17 м.',
-                  },
-                  {
-                    from: 'ул. Северная, 7, Краснодар, Краснодарский край, Россия, 350004',
-                    to: 'ул. Гаврилова П.М., 102, Краснодар, Краснодарский край, Россия, 350020',
-                    distance: 5.2,
-                    time: 10,
-                    timeString: '10 м.',
-                  },
-                ],
-                overallDistance: 13.8,
-                overallTime: 27,
-                overallTimeString: '27 м.',
-              }
-              this.UPDATE_ROUTE(temp)
-            } else {
-              this.DirectionsService.route(
-                {
-                  origin,
-                  waypoints,
-                  destination,
-                  travelMode: 'WALKING',
-                },
-                (response, status) => {
-                  if (status === 'OK' && response) {
-                    this.DirectionsRenderer.setDirections(response)
-
-                    // making route info object
-                    let route = response.routes[0]
-                    let legs = route.legs
-                    let routeInfo = {
-                      routes: [],
-                      overallDistance: 0,
-                      overallTime: 0,
-                      overallTimeString: undefined,
-                    }
-                    _.each(legs, e => {
-                      let distance = _.round(e.distance.value / 1000, 1)
-                      let time = _.round((distance / 30) * 60)
-                      let timeString = time >= 60 ? `${_.round(time / 60)}ч. ${_.round(time % 60)} м.` : `${time} м.`
-                      routeInfo.routes.push({
-                        from: e.start_address,
-                        to: e.end_address,
-                        distance,
-                        time,
-                        timeString,
-                      })
-                      routeInfo.overallDistance += distance
-                      routeInfo.overallTime += time
-                      routeInfo.overallTimeString =
-                        routeInfo.overallTime >= 60
-                          ? `${_.round(routeInfo.overallTime / 60)}ч. ${_.round(routeInfo.overallTime % 60)} м.`
-                          : `${routeInfo.overallTime} м.`
-                    })
-                    this.UPDATE_ROUTE(routeInfo)
-                  }
-                }
-              )
-            }
-          }
-        } else if (_.size(addresses) <= 0) {
-          this.UPDATE_ROUTE(undefined)
-        }
+        this.getAndDisplayRoute(addresses)
       }
     },
   },
 
   async mounted() {
-    // * Load map according to user position
-    // navigator.geolocation.getCurrentPosition(
-    //   pos => {
-    //     this.lat = pos.coords.latitude
-    //     this.lon = pos.coords.longitude
-    //   },
-    //   err => {
-    //     console.debug(err.code, err.message)
-    //   },
-    //   {
-    //     enableHighAccuracy: true,
-    //     timeout: 5000,
-    //     maximumAge: 0,
-    //   }
-    // )
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'UPDATE_ADDRESSES_ORDER') {
+        this.getAndDisplayRoute(mutation.payload)
+      }
+    })
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        this.lat = pos.coords.latitude
+        this.lon = pos.coords.longitude
+      },
+      err => {
+        console.debug(err.code, err.message)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      }
+    )
+
+    setInterval(() => {
+      if (this.$refs.sdeMap) {
+        if (this.$refs.sdeMap.$mapObject.getZoom() <= 10) {
+          this.$refs.sdeMap.$mapObject.setZoom(12)
+        }
+      }
+    }, 1000)
   },
 }
 </script>
@@ -253,7 +244,7 @@ export default {
 .vue-map-container
   &.mobile-map
     width 100%
-    height calc(100vh - 49px)
+    height calc(100vh - 100px)
 
   &.desktop-map
     width 100%

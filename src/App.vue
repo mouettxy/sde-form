@@ -1,7 +1,6 @@
 <template lang="pug">
 v-app
-  v-main
-    sdeForm
+  sdeForm
 </template>
 
 <script>
@@ -16,12 +15,86 @@ export default {
 
   data: () => ({}),
 
-  created() {
-    window.addEventListener('resize', () => {
-      let vh = window.innerHeight * 0.01
-      document.documentElement.style.setProperty('--vh', `${vh}px`)
-    })
+  methods: {
+    async generate() {
+      /* let clients = await http.get('/api/v2/client/')
+      console.log(clients) */
+      /* clients = _.filter(clients.data, e => {
+        return _.includes(a, e.CLIENT)
+      })
+      let clientsWithError = []
+      let clientsWithAliases = []
+      _.each(clients, async e => {
+        setTimeout(async () => {
+          if (e.CLIENT && !!_.trim(e.ADDR)) {
+            if (e.aliases === null) {
+              let newAlias = {
+                name: 'От нас / К нам',
+                address: e.ADDR,
+                lat: undefined,
+                lon: undefined,
+              }
+
+              try {
+                let suggestions = await getAddressSuggestions(newAlias.address)
+                let suggestion = suggestions[0]
+                if (!suggestion.data.geo_lat || !suggestion.data.geo_lon) {
+                  clientsWithError.push(e.CLIENT)
+                } else {
+                  newAlias.lat = suggestion.data.geo_lat
+                  newAlias.lon = suggestion.data.geo_lon
+
+                  let id = await http.post(`/api/v2/client/${e.CLIENT}/aliases/`, newAlias)
+                  console.log(id)
+                }
+              } catch (err) {
+                clientsWithError.push(e.CLIENT)
+              }
+            } else {
+              clientsWithAliases.push(e.CLIENT)
+            }
+          }
+        }, 1000)
+      })
+      console.log(clientsWithError, 'errors')
+      console.log(clientsWithAliases, 'aliases') */
+      /* let clientsWithError = []
+      _.each(clients, async e => {
+        if (e.CLIENT && !!_.trim(e.ADDR)) {
+          if (e.aliases === null) {
+            let newAlias = {
+              name: 'От нас / К нам',
+              address: e.ADDR,
+              lat: undefined,
+              lon: undefined,
+            }
+
+            setTimeout(async () => {
+              try {
+                let suggestions = await getAddressSuggestions(newAlias.address)
+                let suggestion = suggestions[0]
+                if (!suggestion.data.geo_lat || !suggestion.data.geo_lon) {
+                  clientsWithError.push(e.CLIENT)
+                } else {
+                  newAlias.lat = suggestion.data.geo_lat
+                  newAlias.lon = suggestion.data.geo_lon
+
+                  let id = await http.post(`/api/v2/client/${e.CLIENT}/aliases/`, newAlias)
+                  console.log(id)
+                }
+              } catch (err) {
+                clientsWithError.push(e.CLIENT)
+              }
+            }, 500)
+          }
+        }
+      })
+
+      console.log(clientsWithError) */
+    },
   },
+
+  async created() {},
 }
 </script>
 
@@ -34,4 +107,17 @@ body
   overflow hidden
   min-height 100%
   width 100%
+
+::-webkit-scrollbar
+  width 8px
+
+/* Track */
+::-webkit-scrollbar-track
+  box-shadow none
+  border-radius 0
+
+/* Handle */
+::-webkit-scrollbar-thumb
+  background #ffcc01
+  border-radius 8px
 </style>

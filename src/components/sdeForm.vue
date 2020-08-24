@@ -1,10 +1,10 @@
 <template lang="pug">
 .fields__main
-  v-snackbar(v-model='msg', :color='msgColor', left='left', timeout='7000', top='top')
-    | {{msgText}}
-    template(v-slot:action='{ attrs }')
-      v-btn(dark='', text='', v-bind='attrs', @click='msg = false')
-        | Закрыть
+  template(v-if='priceList && priceList.overall')
+    v-scale-transition
+      PriceLabel
+
+  MoreThanSixAddresses
 
   v-container.fields__main-wrap(fluid)
     v-row.fields__row
@@ -14,83 +14,56 @@
             v-model='active',
             :background-color='colorTab',
             :color='colorTabText',
-            center-active,
             :next-icon='$icons.rightArrow',
             :prev-icon='$icons.leftArrow',
+            :touch='false',
+            touchless,
             show-arrows,
             grow
           )
             v-tab Настройки
             v-tab Оформите заявку
             v-tab(v-if='isMobile') Карта
+          v-tabs-items.fields__panel-tabs(v-model='active')
             v-tab-item
-              v-card.fields__settings(flat)
-                perfect-scrollbar.fields__settings-wrap
-                  sdeSettings
+              SettingsBlock
             v-tab-item
-              v-slide-x-transition
-                template(v-if='state === "filling"')
-                  v-card.fields__addresses(flat)
-                    perfect-scrollbar.fields__addresses-wrap
-                      v-card.fields__addresses-inputs.elevation-6
-                        ClientField(v-if='!isRememberedUser')
-                        AddressField(:disabled='!$store.state.client')
-                      ClientFavorites
-                      Addresses
-                      CompleteAddressFields(v-if='priceList && client')
-                      template(v-if='priceList')
-                        v-btn(color='primary', block, @click='toSendOrder()', v-if='priceList.overall') Вызвать экспедитора
-                      v-spacer
-              v-slide-x-transition
-                template(v-if='state === "completing"')
-                  perfect-scrollbar.fields__send-order-wrap
-                    SendOrder(@back='fromSendOrder()', @order-sended='orderSended', @order-sended-error='orderSendedError')
-                    v-spacer
+              OrderBlock(:state='state', @state-change='onStateChange')
             v-tab-item(v-if='isMobile')
-              sdeMap.fields__map(style='height: 90vh')
+              sdeMap.fields__map
       v-col.fields__cols.fields__map(cols='12', lg='7', md='6', v-if='!isMobile')
         sdeMap
-    v-scale-transition
-      PriceLabel(v-if='priceList && priceList.overall')
 </template>
 
 <script>
 import _ from 'lodash'
-import ClientFavorites from '@/components/ClientFavorites'
-import AddressField from '@/components/AddressField'
-import Addresses from '@/components/Addresses'
-import ClientField from '@/components/ClientField'
+
+import MoreThanSixAddresses from '@/components/snackbars/MoreThanSixAddresses'
+import SettingsBlock from '@/components/app-blocks/SettingsBlock'
+import OrderBlock from '@/components/app-blocks/OrderBlock'
 import PriceLabel from '@/components/PriceLabel'
-import CompleteAddressFields from '@/components/CompleteAddressFields'
 import sdeMap from '@/components/sdeMap'
-import sdeSettings from '@/components/sdeSettings'
-import SendOrder from '@/components/SendOrder'
 
 import { mapState, mapActions } from 'vuex'
 
 import { colors, breakpoints } from '@/mixins/'
 
+import { unicornBus } from '@/main'
+
 export default {
   name: 'sdeForm',
 
   components: {
-    AddressField,
-    ClientField,
-    ClientFavorites,
-    Addresses,
+    MoreThanSixAddresses,
+    SettingsBlock,
+    OrderBlock,
     PriceLabel,
-    CompleteAddressFields,
-    sdeSettings,
-    SendOrder,
     sdeMap,
   },
 
   mixins: [colors, breakpoints],
 
   data: () => ({
-    msg: false,
-    msgColor: 'success',
-    msgText: '',
     state: 'filling',
     active: 2,
   }),
@@ -109,38 +82,15 @@ export default {
   },
 
   methods: {
-    ...mapActions(['GET_CLIENT', 'RESET_FORM']),
-    toSendOrder() {
-      this.state = 'completing'
+    onStateChange(state) {
+      this.state = state
     },
-    fromSendOrder() {
-      this.state = 'filling'
-    },
-    async orderSended(info) {
-      this.state = 'filling'
-      this.msg = true
-      this.msgColor = 'success'
-      this.msgText = `Заявка ${info.id} успешно передана в работу.`
-
-      this.RESET_FORM
-      await this.GET_CLIENT(info.client)
-    },
-    async orderSendedError() {
-      this.msg = true
-      this.msgColor = 'error'
-      this.msgText = 'Не удалось передать заявку в работу. Попробуйте снова, или свяжитесь с администрацией сайта.'
-
-      this.RESET_FORM
-      if (this.isRememberedUser) {
-        await this.GET_CLIENT(this.isRememberedUser)
-      }
-    },
+    ...mapActions(['GET_CLIENT', 'RESET_FORM', 'ADD_ADDRESS']),
   },
 
   watch: {
     breakpoints: {
       handler(val) {
-        console.log(val)
         if (!this.isMobile) {
           this.active = 1
         } else {
@@ -163,10 +113,22 @@ export default {
 
     if (this.isMobile) {
       this.active = 2
-      this.active = 1
+      setTimeout(() => {
+        this.active = 1
+      }, 500)
     } else {
       this.active = 1
     }
+
+    unicornBus.$on('order-sended-saved', data => {
+      this.state = 'filling'
+    })
+    unicornBus.$on('order-sended', data => {
+      this.state = 'filling'
+    })
+    unicornBus.$on('order-sended-error', () => {
+      this.state = 'filling'
+    })
   },
 }
 </script>
@@ -178,8 +140,6 @@ colors = {
 }
 
 full-page()
-  /* height 100vh
-  height calc(var(--vh, 1vh) * 100) */
   height calc(100vh - 50px)
 
 +prefix-classes('fields__')
@@ -189,6 +149,12 @@ full-page()
     display flex
     flex-direction column
 
+  .row
+    width 100%
+    height 100%
+    margin-right 0
+    margin-left 0
+
   .main-wrap
     padding 0
 
@@ -196,12 +162,13 @@ full-page()
     padding 0
 
   .panel
-    padding 0 6px 0 12px
+    padding 0
 
     .panel-wrap
       full-page()
 
   .addresses-wrap
+    overflow scroll
     full-page()
     padding 6px
 
@@ -209,17 +176,18 @@ full-page()
       padding 16px
 
   .send-order-wrap
+    overflow scroll
     full-page()
 
 .fields__panel-tabs
   .spacer
-    height 64px
+    height 128px
 
   .v-slide-group__content.v-tabs-bar__content
-    /* .v-tab
-    color lightness(colors.black, 50%) !important
-    &.v-tab--active
-      color colors.black !important */
     .v-tabs-slider
       background colors.primary !important
+
+.v-text-field__slot
+  textarea
+    font-size 0.9rem
 </style>

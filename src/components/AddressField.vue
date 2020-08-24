@@ -1,29 +1,33 @@
 <template lang="pug">
-v-autocomplete.address__search(
-  v-model='value',
-  :loading='isLoading',
-  :items='suggestions',
-  :search-input.sync='query',
-  :error-messages='errMsg',
-  :prepend-inner-icon='$icons.mapMarker',
-  :append-icon='$icons.search',
-  :success-messages='sucMsg',
-  :disabled='disabled',
-  @input='onInput',
-  :color='color',
-  hide-no-data,
-  no-filter,
-  persistent-hint,
-  hint='Выбранный адрес появится в списке путей.',
-  label='Укажите адрес доставки'
-)
+.address-search__main
+  v-autocomplete.address__search(
+    v-model='value',
+    :loading='isLoading',
+    :items='suggestions',
+    :search-input.sync='query',
+    :error-messages='errMsg',
+    :prepend-inner-icon='$icons.mapMarker',
+    :append-icon='$icons.search',
+    :success-messages='sucMsg',
+    :disabled='disabled',
+    @input='onInput',
+    :color='color',
+    hide-no-data,
+    no-filter,
+    persistent-hint,
+    hint='Выбранный адрес появится в списке точек маршрута..',
+    label='Укажите адрес доставки',
+    attach='.address-attach-to__wrapper'
+  )
+  .address-attach-to
+    .address-attach-to__wrapper
 </template>
 
 <script>
 import _ from 'lodash'
 import { mapActions } from 'vuex'
 import { colors } from '@/mixins/'
-import { getAddressSuggestions, getAddressLatLon } from '../api/addresses'
+import { addressesApi as api } from '@/api'
 
 export default {
   name: 'AddressField',
@@ -88,7 +92,7 @@ export default {
       }
 
       if (!this.value.suggestion.geo_lat || !this.value.suggestion.geo_lon) {
-        const response = await getAddressLatLon(this.value.detailedAddress)
+        const response = await api.getLatLon(this.value.detailedAddress)
 
         if (response) {
           this.value = {
@@ -120,7 +124,7 @@ export default {
     },
     async getSuggestions() {
       this.isLoading = true
-      const response = await getAddressSuggestions(this.query)
+      const response = await api.getSuggestions(this.query)
       if (response) {
         this.entries = response
       } else {
@@ -172,13 +176,19 @@ export default {
   },
 
   created() {
-    this.debouncedSuggestions = _.debounce(this.getSuggestions, 500)
+    this.debouncedSuggestions = _.debounce(this.getSuggestions, 350)
   },
 }
 </script>
 
-<style>
-.address__search .notranslate {
-  transform: none !important;
-}
+<style lang="stylus">
+.address__search .notranslate
+  transform none !important
+
+.address-attach-to
+  position relative
+
+  .address-attach-to__wrapper
+    top -65px
+    position absolute
 </style>

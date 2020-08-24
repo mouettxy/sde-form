@@ -11,28 +11,31 @@
         v-timeline(dense)
           v-timeline-item.send-order__buttons(:icon='$icons.check')
             v-card.pa-2
-              v-btn(color='primary', block, @click='callExpeditor()') Вызвать экспедитора
-              v-divider.mt-4.mb-n2.mx-4
-              v-row
-                v-col(cols='12', lg='6', md='6')
-                  v-text-field(
-                    :color='color',
-                    label='Сохранённый адрес',
-                    hint='Укажите имя для сохранённого адреса. Заявка будет отправлена.',
-                    type='text',
-                    auocomplete='false',
-                    :prepend-inner-icon='$icons.save',
-                    v-model.number='addressSaveName',
-                    :error-messages='addressSaveErrors'
-                  )
-                v-col(cols='12', lg='6', md='6')
-                  v-btn.mt-4(color='primary', block, @click='callExpeditor(true)') Cохранить заявку
+              v-container(fluid)
+                v-row
+                  v-col(cols='12')
+                    v-btn(color='primary', block, @click='callExpeditor()') Отправить
+                v-divider.ma-2
+                v-row(v-if='!isNewClient')
+                  v-col(cols='12', lg='6', md='6')
+                    v-text-field(
+                      :color='color',
+                      label='Наименование заявки',
+                      hint='Укажите имя шаблона заявки, при сохранении заявка будет отправлена.',
+                      type='text',
+                      auocomplete='false',
+                      :prepend-inner-icon='$icons.save',
+                      v-model.number='addressSaveName',
+                      :error-messages='addressSaveErrors'
+                    )
+                  v-col(cols='12', lg='6', md='6')
+                    v-btn(:class='isMobile ? "mt-n4" : "mt-4"', color='primary', block, @click='callExpeditor(true)') Cохранить
           v-timeline-item.send-order__client(:icon='$icons.user')
             v-card
-              v-card-title.secondary.send-order__client-header
-                template(v-if='isNew')
-                  span Добро пожаловать в SDE {{clientInformation}}, не забудьте связаться с администрацией сайта для получения постоянного идентификатора клиента.
-                template(v-if='clientInformation')
+              v-card-title.secondary.send-order__client-header.text-wrap
+                template(v-if='isNewClient')
+                  span Добро пожаловать в SDE "{{clientInformation}}", не забудьте связаться с администрацией сайта для получения постоянного идентификатора клиента.
+                template(v-if='clientInformation && !isNewClient')
                   v-icon(color='#181818') {{$icons.user}}
                   span {{ clientInformation.CLIENT }} {{clientInformation.customer_name}}
           v-timeline-item.send-order__address(
@@ -104,108 +107,95 @@
                 v-list-item(two-line, v-if='addresses.info.car')
                   v-list-item-content
                     v-list-item-title Доставка автомобилем
-                v-list-item(two-line, v-if='addresses.info.optimizeRoute')
-                  v-list-item-content
-                    v-list-item-title Оптимизировать маршрут
           v-timeline-item.send-order__price(:icon='$icons.cash')
             v-card
               v-card-title.secondary.send-order__price-header
                 v-icon(size='1.4rem', color='#181818') {{$icons.cash}}
                 span Цена
               v-card-text
-                v-simple-table.send-order__price-table
-                  template(v-slot:default='')
-                    tbody
-                      tr(v-if='addresses.routes').send-order__price-payed-row
-                        td Расстояние ({{addresses.routes.overallDistance}} км.)
-                        td
-                        td
-                          span + {{ round(prices.routes.price) }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='prices.additionals').send-order__price-payed-row
-                        td Дополнительные услуги
-                        td
-                        td
-                          span + {{ prices.additionals }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='prices.addresses.buyInBuyOut').send-order__price-payed-row
-                        td Выручка / Выкуп
-                        td
-                        td
-                          span + {{ prices.addresses.buyInBuyOut }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='prices.addresses.additionals.price').send-order__price-payed-row
-                        td Прочее
-                        td
-                        td
-                          span + {{ prices.addresses.additionals.price }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='prices.addresses.bundles').send-order__price-payed-row
-                        td Наборы
-                        td
-                        td
-                          span + {{ prices.addresses.bundles }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='addresses.info.quick').send-order__price-payed-row
-                        td
-                        td Срочная доставка
-                        td
-                          span + 20%
-                      tr(v-if='addresses.info.car').send-order__price-payed-row
-                        td
-                        td Доставка автомобилем
-                        td
-                          span + 15%
-                      template(v-if='addresses')
-                        tr(v-if='prices.addresses.additionals.entries > 5').send-order__price-discount-row
-                          td
-                          td Количество доп. услуг
-                          td
-                            span - 5%
-                      template(v-if='typeof clientInformation !== "string" && clientInformation')
-                        tr(v-if='clientInformation.discount').send-order__price-discount-row
-                          td
-                          td Скидка клиента
-                          td
-                            span - {{ clientInformation.discount }}%
-                      tr(v-if='prices.overall').send-order__price-final-row.success
-                        td
-                        td Итого
-                        td
-                          span(:class='prices.discounted !== prices.overall ? "send-order__line-through" : ""') + {{ prices.overall }}
-                          v-icon(size='1rem') {{$icons.rub}}
-                      tr(v-if='prices.discounted').send-order__price-final-row.success
-                        td
-                        td Со скидкой
-                        td
-                          span + {{ prices.discounted }}
-                          v-icon(size='1rem') {{$icons.rub}}
+                v-container(fluid).send-order__price-table
+                  v-row(v-if='addresses.routes').send-order__price-payed-row
+                    v-col(cols='6') Расстояние ({{addresses.routes.overallDistance}} км.)
+                    v-col(cols='6')
+                      span +{{ round(prices.routes.price) }}
+                      v-icon(size='1rem') {{$icons.rub}}
+                  v-row(v-if='prices.additionals').send-order__price-payed-row
+                    v-col(cols='6') Дополнительные услуги
+                    v-col(cols='6')
+                      span +{{ prices.additionals }}
+                      v-icon(size='1rem') {{$icons.rub}}
+                  v-row(v-if='prices.addresses.buyInBuyOut').send-order__price-payed-row
+                    v-col(cols='6') Выручка / Выкуп
+                    v-col(cols='6')
+                      span +{{ prices.addresses.buyInBuyOut }}
+                      v-icon(size='1rem') {{$icons.rub}}
+                  v-row(v-if='prices.addresses.bundles').send-order__price-payed-row
+                    v-col(cols='6') Наборы
+                    v-col(cols='6')
+                      span +{{ prices.addresses.bundles }}
+                      v-icon(size='1rem') {{$icons.rub}}
+                  v-row(v-if='addresses.info.quick').send-order__price-payed-row
+                    v-col(cols='6') Срочная доставка
+                    v-col(cols='6')
+                      span +20%
+                  v-row(v-if='addresses.info.car').send-order__price-payed-row
+                    v-col(cols='6') Доставка автомобилем
+                    v-col(cols='6')
+                      span +15%
+                  template(v-if='addresses')
+                    v-row(v-if='prices.addresses.additionals.entries > 5').send-order__price-discount-row
+                      v-col(cols='6') Количество доп. услуг
+                      v-col(cols='6')
+                        span -5%
+                  template(v-if='typeof clientInformation !== "string" && clientInformation')
+                    v-row(v-if='clientInformation.discount').send-order__price-discount-row
+                      v-col(cols='6') Скидка клиента
+                      v-col(cols='6')
+                        span -{{ clientInformation.discount }}%
+                  v-row(v-if='prices.overall').send-order__price-final-row.success
+                    v-col(cols='6') Итого
+                    v-col(cols='6')
+                      span(:class='prices.discounted !== prices.overall ? "send-order__line-through" : ""') +{{ prices.overall }}
+                      v-icon(size='1rem') {{$icons.rub}}
+                  v-row(v-if='prices.discounted !== prices.overall').send-order__price-final-row.success
+                    v-col(cols='6') Со скидкой
+                    v-col(cols='6')
+                      span +{{ prices.discounted }}
+                      v-icon(size='1rem') {{$icons.rub}}
           v-timeline-item.send-order__buttons(:icon='$icons.check')
             v-card.pa-2
-              v-btn(color='primary', block, @click='callExpeditor()') Вызвать экспедитора
-              v-divider.mt-4.mb-n2.mx-4
-              v-row
-                v-col(cols='12', lg='6', md='6')
-                  v-text-field(
-                    :color='color',
-                    label='Сохранённый адрес',
-                    hint='Укажите имя для сохранённого адреса. Заявка будет отправлена.',
-                    type='text',
-                    auocomplete='false',
-                    :prepend-inner-icon='$icons.save',
-                    v-model.number='addressSaveName',
-                    :error-messages='addressSaveErrors'
-                  )
-                v-col(cols='12', lg='6', md='6')
-                  v-btn.mt-4(color='primary', block, @click='callExpeditor(true)') Cохранить заявку
+              v-container(fluid)
+                v-row
+                  v-col(cols='12')
+                    v-btn(color='primary', block, @click='callExpeditor()') Отправить
+                v-divider.ma-2
+                v-row(v-if='!isNewClient')
+                  v-col(cols='12', lg='6', md='6')
+                    v-text-field(
+                      :color='color',
+                      label='Наименование заявки',
+                      hint='Укажите имя шаблона заявки, при сохранении заявка будет отправлена.',
+                      type='text',
+                      auocomplete='false',
+                      :prepend-inner-icon='$icons.save',
+                      v-model.number='addressSaveName',
+                      :error-messages='addressSaveErrors'
+                    )
+                  v-col(cols='12', lg='6', md='6')
+                    v-btn(
+                      :class='isMobile ? "mt-nabor_kuda_4" : "mt-4"',
+                      color='primary',
+                      block,
+                      @click='callExpeditor(true)'
+                    ) Cохранить
+  v-spacer
 </template>
 
 <script>
-import _, { add } from 'lodash'
+import _ from 'lodash'
 import moment from 'moment'
-import { sendOrder, saveOrder } from '@/api/order'
 import { colors, breakpoints } from '@/mixins/'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'SendOrder',
@@ -245,6 +235,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['SEND_ORDER']),
     backToFilling() {
       this.$emit('back')
     },
@@ -256,7 +247,6 @@ export default {
         }
 
         let results = this.formatData()
-        let id = await sendOrder(results.raw, results.processed)
         let state = {
           name: this.addressSaveName,
           addressInfo: this.addressInfo,
@@ -265,27 +255,11 @@ export default {
           route: this.route,
         }
 
-        let saved = await saveOrder(_.cloneDeep(state), this.client.CLIENT)
-        if (id !== false) {
-          this.$emit('order-sended', { id, client: this.client.CLIENT })
-        } else {
-          this.$emit('order-sended-error')
-        }
-
-        if (saved !== false) {
-          this.$emit('order-saved')
-        } else {
-          this.$emit('order-saved-error')
-        }
+        this.SEND_ORDER({ results, state, needSave })
       } else {
         let results = this.formatData()
-        let id = await sendOrder(results.raw, results.processed)
 
-        if (id !== false) {
-          this.$emit('order-sended', { id, client: this.client.CLIENT })
-        } else {
-          this.$emit('order-sended-error')
-        }
+        this.SEND_ORDER({ results })
       }
     },
     formatAddress(address) {
@@ -366,7 +340,7 @@ export default {
         скидка: !this.isNew ? client.discount : '',
         условия_оплаты: !this.isNew ? client.payment_type : '',
         кто_платит: info.whoPays || '',
-        кто_везёт: (!this.isNew ? (client.stop_delivery === '1' ? 'не возим' : '') : '') + (info.optimizeRoute || ''),
+        кто_везёт: !this.isNew ? (client.stop_delivery === '1' ? 'не возим' : '') : '',
         пробег: this.addresses.routes.overallDistance,
         время_в_пути: this.addresses.routes.overallTimeString,
         'стоимость допов': this.prices.additionals || '',
@@ -477,14 +451,53 @@ export default {
         customer: !this.isNew ? client.CLIENT : client,
         komment: info.comment || '',
         kto_opl_dost: info.whoPays || '',
-        route_opt: info.optimizeRoute ? 'Оптимизировать маршрут' : '',
+        route_opt: '',
         srochno: info.quick || '',
         summ_pay: buyin || '',
         car: info.car ? 'Требуется автомобиль' : '',
         ...rawMappingsModified,
       }
 
-      return { raw, processed }
+      const modern = {
+        month: moment()
+          .locale('ru')
+          .startOf('month')
+          .format('L'),
+        date: moment()
+          .locale('ru')
+          .format('L'),
+        orderTime: moment()
+          .locale('ru')
+          .format('LTS'),
+        orderFromTime: fields(0).datetime || '',
+        orderToTime: fields(_.size(addresses) - 1).datetime || '',
+        addresses: _.map(this.addressList, e => {
+          return { address: e.address, fields: e.fields }
+        }),
+        info: this.addressInfo,
+        price: this.priceList,
+        route: this.route,
+        car: info.car ? 'Требуется автомобиль' : false,
+        client: !this.isNew ? client.CLIENT : client,
+        clientName: !this.isNew ? client.customer_name : '',
+        clientPhone: !this.isNew ? client.customer_phone : '',
+        rate: !this.isNew ? client.Input : '',
+        payForm: !this.isNew ? client.payment_form : '',
+        promo: !this.isNew ? client.who_attracted : '',
+        discount: !this.isNew ? client.discount : '',
+        payCondition: !this.isNew ? client.payment_type : '',
+        payWho: info.whoPays || '',
+        whoWork: !this.isNew ? (client.stop_delivery === '1' ? 'не возим' : '') : '',
+        mileage: this.addresses.routes.overallDistance,
+        timeInWay: this.addresses.routes.overallTimeString,
+        costAdditionals: this.prices.additionals || '',
+        cost: this.prices.overall || '',
+        costDiscount: this.prices.discounted || this.prices.overall || '',
+        buyin: buyin,
+        comment: info.comment || '',
+      }
+
+      return { raw, processed, modern }
     },
     compact(val) {
       const search = ['г Краснодар, ', 'ул им. ', 'ул ']
@@ -512,11 +525,16 @@ colors = {
   white: #fff
 }
 
+full-page()
+  height calc(100vh - 50px)
+
 +prefix-classes('send-order__')
   .main
     padding 6px
 
     .main-wrap
+      overflow scroll
+      full-page()
       padding 6px
 
       .client
@@ -578,4 +596,7 @@ colors = {
 
     .v-icon
       margin-bottom 2px
+
+.text-wrap
+  word-break break-word
 </style>

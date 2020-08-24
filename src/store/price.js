@@ -20,7 +20,7 @@ const UPDATE_COMPLETE_ADDRESS_FIELDS = 'UPDATE_COMPLETE_ADDRESS_FIELDS'
 
 const log = function(...args) {
   if (process.env.NODE_ENV === 'development') {
-    console.info(...args)
+    console.debug(...args)
   }
 }
 
@@ -65,11 +65,20 @@ function calculateAdditionals(addresses, client) {
 function calculateBuyInBuyOut(addresses, client) {
   let accumulate = 0
   _.each(addresses, e => {
-    if (e.fields.buyin && !(client.free_pay === '1')) {
-      accumulate += 35
-    }
-    if (e.fields.buyout && !(client.free_cash === '1')) {
-      accumulate += 35
+    if (typeof client === 'string') {
+      if (e.fields.buyin) {
+        accumulate += 35
+      }
+      if (e.fields.buyout) {
+        accumulate += 35
+      }
+    } else {
+      if (e.fields.buyin && !(client.free_pay === '1')) {
+        accumulate += 35
+      }
+      if (e.fields.buyout && !(client.free_cash === '1')) {
+        accumulate += 35
+      }
     }
   })
   return accumulate
@@ -79,13 +88,24 @@ function calculateAdditionalsAddresses(addresses, client) {
   let accumulate = 0
   let entries = 0
   _.each(addresses, e => {
-    if (e.fields.takeIn && !(client.free_in === '1')) {
-      entries += 1
-      accumulate += 35
-    }
-    if (e.fields.takeOut && !(client.free_out === '1')) {
-      entries += 1
-      accumulate += 35
+    if (typeof client === 'string') {
+      if (e.fields.takeIn) {
+        entries += 1
+        accumulate += 35
+      }
+      if (e.fields.takeOut) {
+        entries += 1
+        accumulate += 35
+      }
+    } else {
+      if (e.fields.takeIn && !(client.free_in === '1')) {
+        entries += 1
+        accumulate += 35
+      }
+      if (e.fields.takeOut && !(client.free_out === '1')) {
+        entries += 1
+        accumulate += 35
+      }
     }
     if (e.fields.bus) {
       entries += 1
@@ -115,7 +135,12 @@ function calculateRoutesPrice(state, store) {
     store.commit(INIT_PRICE_LIST, 'init')
   }
   if (state.route) {
-    const price = calculateMileagePrice(state.route.overallDistance, parseInt(state.client.Input))
+    let price
+    if (typeof state.client === 'string') {
+      price = calculateMileagePrice(state.route.overallDistance, NaN)
+    } else {
+      price = calculateMileagePrice(state.route.overallDistance, parseInt(state.client.Input))
+    }
     log('Commiting price ', { price })
     store.dispatch(SET_ROUTES_PRICE, { price })
   } else {
