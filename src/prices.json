@@ -1,0 +1,140 @@
+{
+  "default": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 90,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 120,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 23 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 21 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 19 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
+  },
+  "Краснодар": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 90,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 120,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 23 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 21 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 19 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
+  },
+  "Севастополь": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 90,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 120,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 23 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 21 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 19 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
+  }
+}
