@@ -11,17 +11,14 @@ env:
 
 stages:
   - lint
-  - build
-  - deploy
+  - build && deploy
 
 jobs:
   include:
     - stage: lint
       script:
         - npm run lint
-    - stage: build
+    - stage: build && deploy
       script:
         - npm run build
-    - stage: deploy
-      script:
         - npm run deploy
