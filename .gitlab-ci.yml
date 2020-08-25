@@ -28,4 +28,4 @@ production:
         - apt-get install -y lftp
     script:
         # Sync to FTP
-        - lftp -e "open ftp://api.sde.ru.com; user u1041581 pE!OYj9g; mirror -X .* -X .*/ --reverse --verbose --delete dist/ form/; bye"
+        - lftp -e "set ssl:verify-certificate no; open ftp://api.sde.ru.com; user u1041581 pE!OYj9g; mirror -X .* -X .*/ --reverse --verbose --delete dist/ form/; bye"
