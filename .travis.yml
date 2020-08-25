@@ -1,10 +1,10 @@
 language: node_js
-before_install:
-  - chmod +x deploy.sh
 node_js:
   - 'node'
 cache: npm
-script: npm run build
+script:
+  - npm run build
+  - npm run deploy
 
 deploy:
   provider: pages
@@ -13,6 +13,3 @@ deploy:
   local_dir: dist
   on:
     branch: master
-
-after_success:
-  - ./deploy.sh
