@@ -16,7 +16,7 @@
     no-filter,
     persistent-hint,
     hint='Выбранный адрес появится в списке точек маршрута..',
-    label='Укажите адрес доставки',
+    label='Укажите адрес',
     attach='.address-attach-to__wrapper'
   )
   .address-attach-to
