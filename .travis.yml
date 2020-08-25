@@ -14,4 +14,4 @@ deploy:
   on:
     branch: master
 
-after_success: 'curl -T dist -u $FTP_USER:$FTP_PASSWORD ftp://api.sde.ru.com/form/'
+after_success: 'curl -T dist -u $SFTP_USER:$SFTP_PASSWORD ftp://api.sde.ru.com/form/'
