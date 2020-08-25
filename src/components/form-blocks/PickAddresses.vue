@@ -57,6 +57,7 @@ export default {
 
 <style lang="stylus">
 .pick-addresses__main
+  margin-top 12px
   position relative
 
   .pick-addresses__main-loader

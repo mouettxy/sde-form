@@ -1,6 +1,6 @@
 <template lang="pug">
 v-scroll-y-transition
-  v-card.saved-data__main.elevation-3(v-if='isDisplayed')
+  v-card.saved-data__main.elevation-6(v-if='isDisplayed')
     v-card-title.saved-data__main-title Сохранённые данные пользователя
     v-tabs(
       :background-color='colorTab',
@@ -188,7 +188,7 @@ export default {
 <style lang="stylus">
 +prefix-classes('saved-data__')
   .main
-    margin-top 6px
+    margin-top 12px
 
     .main-title
       word-break break-word
