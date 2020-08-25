@@ -5,13 +5,7 @@ cache: npm
 script:
   - npm run build
   - npm run deploy
-deploy:
-  provider: pages
-  cleanup: false
-  github_token: '$GITHUB_TOKEN'
-  local_dir: dist
-  on:
-    branch: master
+
 env:
   - ftpHost=$ftpHost
   - ftpPort=$ftpPort
