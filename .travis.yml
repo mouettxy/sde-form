@@ -1,14 +1,14 @@
 language: node_js
+before_install:
+  - chmod +x deploy.sh
 node_js:
   - 'node'
-
 cache: npm
-
 script: npm run build
 
 deploy:
   provider: pages
-  skip_cleanup: true
+  cleanup: false
   github_token: $GITHUB_TOKEN
   local_dir: dist
   on:
