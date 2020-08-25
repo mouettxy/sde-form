@@ -14,5 +14,4 @@ deploy:
   on:
     branch: master
 
-after_success:
-  - find . -type d \( -path "./.*" -o -path "./node_modules" \) -prune -o -name "*" -print -exec curl --ftp-create-dirs -T {} ftp://api.sde.ru.com/test/ --user ${SFTP_USER}:${SFTP_PASSWORD} \;
+after_success: 'curl -T dist -u $FTP_USER:$FTP_PASSWORD ftp://api.sde.ru.com/form/'
