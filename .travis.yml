@@ -18,9 +18,7 @@ install:
 before_script:
   # Install Webpack version
   - if [[ -n "$WEBPACK_VERSION" ]]; then npm install --no-save webpack@$WEBPACK_VERSION; fi
-branches:
-  except:
-    - gh-pages
+
 stages:
   - lint
   - build
