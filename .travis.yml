@@ -1,23 +1,38 @@
+
 language: node_js
 node_js:
-  - node
-cache: npm
-script:
-  - npm run build
-
-deploy:
-  provider: pages
-  cleanup: false
-  github_token: '$GITHUB_TOKEN'
-  local_dir: dist
-  on:
-    branch: master
-
-after-script:
-  - npm run deploy
-
+  - "8.6.0"
+  - "node"
 env:
-  - ftpHost=$ftpHost
-  - ftpPort=$ftpPort
-  - ftpUsr=$ftpUsr
-  - ftpPwd=$ftpPwd
+  global:
+    - ftpHost=$ftpHost
+    - ftpPort=$ftpPort
+    - ftpUsr=$ftpUsr
+    - ftpPwd=$ftpPwd
+  - WEBPACK_VERSION= # Current, from package.json
+  - WEBPACK_VERSION=4
+install:
+  # Use npm 5.7.x since it has introduced `npm ci`
+  - if [[ `npm -v` != 5.7* ]]; then npm install -g npm@'>=5.7.1'; fi
+  - npm ci
+before_script:
+  # Install Webpack version
+  - if [[ -n "$WEBPACK_VERSION" ]]; then npm install --no-save webpack@$WEBPACK_VERSION; fi
+branches:
+  except:
+    - gh-pages
+stages:
+  - lint
+  - build
+  - deploy
+jobs:
+  include:
+    - stage: lint
+      script:
+        - npm run lint
+    - stage: build
+      script:
+        - npm run build
+    - stage: deploy
+      script:
+        - npm run deploy
