@@ -38,6 +38,7 @@ const UPDATE_ALIASES = 'UPDATE_ALIASES'
 const UPDATE_ADDRESS_ALIAS = 'UPDATE_ADDRESS_ALIAS'
 const SET_NEW_CLIENT = 'SET_NEW_CLIENT'
 const SET_PRICE_LIST = 'SET_PRICE_LIST'
+const SET_ALWAYTS_IN_OUT = 'SET_ALWAYTS_IN_OUT'
 Vue.use(Vuex)
 
 const state = {
@@ -180,50 +181,6 @@ const actions = {
     commit(RESET_FORM)
   },
   /**
-   * Sets price affected to routes and Google Maps API (that means this calls is not often)
-   * @param {object} payload
-   * @param {int} paylaod.id
-   */
-  [SET_ROUTES_PRICE]({ commit, dispatch, state }, payload) {
-    try {
-      if (state.priceList) {
-        commit(SET_ROUTES_PRICE, payload)
-      } else {
-        commit(INIT_PRICE_LIST)
-        commit(SET_ROUTES_PRICE, payload)
-      }
-    } catch (e) {
-      console.debug(e)
-    }
-  },
-  /**
-   * Sets price affected to address. Very often calls
-   * @param {object} payload
-   */
-  [SET_ADDRESSES_PRICE]({ commit, dispatch }, payload) {
-    try {
-      if (state.priceList) {
-        commit(SET_ADDRESSES_PRICE, payload)
-      } else {
-        commit(INIT_PRICE_LIST)
-        commit(SET_ADDRESSES_PRICE, payload)
-      }
-    } catch (e) {
-      console.debug(e)
-    }
-  },
-  /**
-   * Merges routes and addresses prices, applies discount if exists
-   * @param {object} payload
-   */
-  [MERGE_PRICES]({ commit }, payload) {
-    try {
-      commit(MERGE_PRICES, payload)
-    } catch (e) {
-      console.debug(e)
-    }
-  },
-  /**
    * Trying to get client data by it's id. If search succeseful trying to get some aliases tho.
    * @param {number, string} Client id to search
    * @return {number} Status code of response. Possible values [200, 204, 500].
@@ -251,6 +208,7 @@ const actions = {
         let address = _.filter(state.client.aliases, { name: 'От нас / К нам' })
         address = { ...address[0], isAlias: true, completed: false }
         dispatch(ADD_ADDRESS, address)
+        commit(SET_ALWAYTS_IN_OUT)
       }
 
       return 200
@@ -279,10 +237,10 @@ const actions = {
   [ADD_ADDRESS]({ commit }, address) {
     commit(ADD_ADDRESS, address)
     commit(CALC_ADDRESS_ID)
-    console.log(address)
     if (!address.fields) {
       commit(INIT_ADDRESS_FIELDS)
     }
+    commit(SET_ALWAYTS_IN_OUT)
   },
 
   /**
@@ -319,6 +277,7 @@ const actions = {
    */
   [UPDATE_ROUTE]({ commit }, payload) {
     commit(UPDATE_ROUTE, payload)
+    commit(SET_ALWAYTS_IN_OUT)
   },
 }
 
@@ -351,6 +310,28 @@ const mutations = {
   /*                              ADDRESS MUTATIONS                             */
   /* -------------------------------------------------------------------------- */
 
+  [SET_ALWAYTS_IN_OUT](state) {
+    let addresses = state.addressList
+
+    if (!this.isNewClient) {
+      let alwaysIn = state.client.always_in === '1'
+      let alwaysOut = state.client.always_out === '1'
+      if (alwaysIn || alwaysOut) {
+        _.each(addresses, (e, i) => {
+          if (i === 0 && alwaysOut) {
+            e.fields.takeIn = false
+            e.fields.takeOut = true
+          } else if (i === _.findLastIndex(addresses) && alwaysIn) {
+            e.fields.takeIn = true
+            e.fields.takeOut = false
+          } else if (alwaysIn) {
+            e.fields.takeIn = true
+            e.fields.takeOut = false
+          }
+        })
+      }
+    }
+  },
   [UPDATE_ADDRESSES_ORDER](state, addresses) {
     state.addressList = addresses
   },
