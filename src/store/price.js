@@ -1,7 +1,5 @@
-import _, { over } from 'lodash'
-import { address } from '../plugins/axios'
+import _ from 'lodash'
 import priceSettings from '@/prices.json'
-import { cli } from 'winston/lib/winston/config'
 
 const DEL_ADDRESS = 'DEL_ADDRESS'
 const INIT_ADDRESS_FIELDS = 'INIT_ADDRESS_FIELDS'
