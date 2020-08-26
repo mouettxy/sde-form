@@ -95,12 +95,12 @@
     "mileage": [
       {
         "expression": "<%= mileage <= 3 %>",
-        "price": 90,
+        "price": 75,
         "modifier": false
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 120,
+        "price": 100,
         "modifier": false
       },
       {
@@ -110,26 +110,26 @@
       },
       {
         "expression": "<%= 5 < mileage < 10 %>",
-        "price": "<%= mileage * 23 %>",
+        "price": "<%= mileage * 20 %>",
         "modifier": false
       },
       {
         "expression": "<%= 10 <= mileage < 20 %>",
-        "price": "<%= mileage * 21 %>",
+        "price": "<%= mileage * 18 %>",
         "modifier": false
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 19 %>",
+      "price": "<%= mileage * 16 %>",
       "modifier": false
     },
     "additionals": {
       "entries": 5,
       "entriesDiscount": 10,
-      "buyin": 35,
-      "buyout": 35,
-      "takeIn": 35,
-      "takeOut": 35,
+      "buyin": 30,
+      "buyout": 30,
+      "takeIn": 30,
+      "takeOut": 30,
       "bus": 75,
       "bundle": 5,
       "extraPoint": 20
