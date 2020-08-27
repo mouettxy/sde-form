@@ -1,7 +1,7 @@
 <template lang="pug">
 v-card
   DefaultSnackbar
-  v-slide-x-transition
+  v-slide-x-transition(appear)
     template(v-show='state === "filling"')
       v-card.fields__addresses(flat)
         .fields__addresses-wrap
@@ -14,7 +14,7 @@ v-card
           template(v-if='priceList')
             v-btn(color='primary', block, @click='toSendOrder()', v-if='priceList.overall') Вызвать экспедитора
           v-spacer
-  v-slide-x-transition
+  v-slide-y-reverse-transition(leave-absolute, mode='out-in')
     template(v-if='state === "completing"')
       SendOrder(@back='fromSendOrder()', @order-sended='orderSended', @order-sended-error='orderSendedError')
 </template>

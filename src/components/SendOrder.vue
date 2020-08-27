@@ -531,7 +531,7 @@ full-page()
 +prefix-classes('send-order__')
   .main
     padding 6px
-    z-index 1000
+    z-index 100
     position absolute
     top -8px
     width calc(100% + 6px)
