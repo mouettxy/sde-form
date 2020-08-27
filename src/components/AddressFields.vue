@@ -148,6 +148,12 @@ export default {
     },
     onDateChange() {
       this.isManuallyModified = true
+      let m = moment(this.date).locale('ru')
+      let dateTime = `${m.format('L')} ${m.format('LT')}`
+      if (dateTime) {
+        this.address.datetime = dateTime
+      }
+      this.debouncedHandler({ id: this.addr_id, address: { ...this.address } })
     },
   },
 

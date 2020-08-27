@@ -2,7 +2,8 @@
 .pick-addresses__main(v-if='addressList')
   v-slide-y-transition
     v-card
-      Addresses
+      keep-alive
+        Addresses
       CompleteAddressFields(v-if='priceList && client')
   v-scroll-x-transition(v-if='isLoading')
     .pick-addresses__main-loader(:class='{"accent2": isDark, "white": !isDark}', v-if='isLoading')

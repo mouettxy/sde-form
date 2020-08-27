@@ -1,5 +1,5 @@
 <template lang="pug">
-.send-order__main
+.send-order__main(:class='{"send-order__is-mobile": isMobile}')
   v-card.send-order__main-wrap.elevation-6
     v-card-title
       .send-order__top-actions-block
@@ -517,7 +517,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 colors = {
   primary: #ffcc01,
   black: #181818,
@@ -531,6 +531,17 @@ full-page()
 +prefix-classes('send-order__')
   .main
     padding 6px
+    z-index 1000
+    position absolute
+    top -8px
+    width calc(100% + 6px)
+
+    &.is-mobile
+      padding 6px
+      z-index 100
+      position absolute
+      top -6px
+      width calc(100% + 6px)
 
     .main-wrap
       overflow scroll

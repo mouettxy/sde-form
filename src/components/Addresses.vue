@@ -15,7 +15,8 @@
       v-tab-item.address-list__fields(v-for='address in addressList', :key='address.id')
         v-btn.address-list__actions-close(@click='removeAddress(address.id)', icon)
           v-icon {{$icons.close}}
-        AddressFields(:addr_id='address.id')
+        keep-alive
+          AddressFields(:addr_id='address.id')
         v-scroll-y-reverse-transition
           .address-list__actions(v-if='!address.isAlias && !isNewClient')
             v-row

@@ -2,7 +2,7 @@
 v-card
   DefaultSnackbar
   v-slide-x-transition
-    template(v-if='state === "filling"')
+    template(v-show='state === "filling"')
       v-card.fields__addresses(flat)
         .fields__addresses-wrap
           v-card.fields__addresses-inputs.elevation-6
