@@ -24,7 +24,8 @@
             v-model='date',
             clearText='Сбросить',
             okText='Применить',
-            @input='onDateChange'
+            @input='onDateChange',
+            @reset='onDateReset'
           )
             template(slot='dateIcon')
               v-icon {{$icons.calendar}}
@@ -82,11 +83,14 @@
 import moment from 'moment'
 import _ from 'lodash'
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+import VDatetimePicker from '@/components/third-party/DatetimePicker'
 import { colors } from '@/mixins/'
 
 export default {
   name: 'AddressFields',
-
+  components: {
+    VDatetimePicker,
+  },
   mixins: [colors],
 
   props: ['addr_id'],
@@ -138,6 +142,7 @@ export default {
 
       return 20 + index * 25
     },
+
     updateTimeField() {
       let m = moment()
         .locale('ru')
@@ -146,6 +151,7 @@ export default {
       this.address.datetime = `${m.format('L')} ${m.format('LT')}`
       return `${m.format('L')} ${m.format('LT')}`
     },
+
     onDateChange() {
       this.isManuallyModified = true
       let m = moment(this.date).locale('ru')
@@ -154,6 +160,11 @@ export default {
         this.address.datetime = dateTime
       }
       this.debouncedHandler({ id: this.addr_id, address: { ...this.address } })
+    },
+
+    onDateReset() {
+      this.isManuallyModified = false
+      this.updateTimeField()
     },
   },
 

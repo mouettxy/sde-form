@@ -34,7 +34,6 @@ import {
 } from '@mdi/js'
 import Vuetify, { VApp, VNavigationDrawer, VFooter, VToolbar, VFadeTransition } from 'vuetify/lib'
 import { ClickOutside, Intersect, Mutate, Resize, Ripple, Scroll, Touch } from 'vuetify/lib/directives'
-import DatetimePicker from 'vuetify-datetime-picker'
 import 'vuetify/src/styles/main.sass'
 
 Vue.use(Vuetify, {
@@ -55,8 +54,6 @@ Vue.use(Vuetify, {
     Touch,
   },
 })
-
-Vue.use(DatetimePicker)
 
 const _icons = {
   mapMarker: mdiMapMarker,
