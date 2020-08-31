@@ -120,4 +120,7 @@ body
 ::-webkit-scrollbar-thumb
   background #ffcc01
   border-radius 8px
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active
+  background-color inherit !important
 </style>

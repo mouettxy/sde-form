@@ -246,6 +246,16 @@ export default {
           return
         }
 
+        if (
+          _.includes(
+            _.map(this.client.saved_orders, e => e.name),
+            this.addressSaveName
+          )
+        ) {
+          this.addressSaveErrors = 'Адрес с таким именем уже существует'
+          return
+        }
+
         let results = this.formatData()
         let state = {
           name: this.addressSaveName,
@@ -370,7 +380,7 @@ export default {
             if (exp.strings[1] === 'phone') {
               return idExists
                 ? addresses[id][exp.strings[0]][exp.strings[1]]
-                  ? '8' + addresses[id][exp.strings[0]][exp.strings[1]].replace(/\D/g, '')
+                  ? '8' + addresses[id][exp.strings[0]][exp.strings[1]].replace(/\D/g, '').slice(1)
                   : ''
                 : ''
             }
