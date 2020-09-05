@@ -104,6 +104,12 @@ export default {
           this.showPassword = false
         }
       } catch (e) {
+        this.errMsg = ''
+        this.sucMsg = 'Добро пожаловать в SDE.'
+        this.RESET_STATE()
+        this.isLoading = false
+        this.showPassword = false
+        this.client = undefined
         this.clientTemp = undefined
         this.showPassword = false
         await this.SET_NEW_CLIENT(this.value)

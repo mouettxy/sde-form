@@ -82,7 +82,7 @@ export default {
     },
     async addAlias(id) {
       if (!this.val) {
-        this.$notification.error('Укажите кодовое название адреса')
+        this.$notification.error('Укажите название адреса для сохранения')
         return false
       }
 
