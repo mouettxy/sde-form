@@ -129,6 +129,11 @@ export default {
     unicornBus.$on('order-sended-error', () => {
       this.state = 'filling'
     })
+    unicornBus.$on('address-added', payload => {
+      if (payload.name !== 'От нас / К нам' && !payload.isAlias) {
+        this.$notification.success(`Успешное добавление адреса ${payload.address}`)
+      }
+    })
   },
 }
 </script>
@@ -141,6 +146,9 @@ colors = {
 
 full-page()
   height calc(100vh - 50px)
+
+.notificationCenter.topLeft
+  z-index 99999
 
 +prefix-classes('fields__')
   .main

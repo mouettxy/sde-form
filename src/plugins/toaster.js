@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueNotification from '@kugatsu/vuenotification'
 import { TimelineMax } from 'gsap'
+
 Vue.use(VueNotification, {
   timer: 7,
   position: 'topLeft',

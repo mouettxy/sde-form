@@ -241,6 +241,8 @@ const actions = {
       commit(INIT_ADDRESS_FIELDS)
     }
     commit(SET_ALWAYTS_IN_OUT)
+
+    unicornBus.$emit('address-added', address)
   },
 
   /**
