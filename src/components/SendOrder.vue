@@ -119,10 +119,10 @@
                     v-col(cols='6')
                       span +{{ round(prices.routes.price) }}
                       v-icon(size='1rem') {{$icons.rub}}
-                  v-row(v-if='prices.additionals').send-order__price-payed-row
+                  v-row(v-if='prices.addresses.additionals.price').send-order__price-payed-row
                     v-col(cols='6') Дополнительные услуги
                     v-col(cols='6')
-                      span +{{ prices.additionals }}
+                      span +{{ prices.addresses.additionals.price }}
                       v-icon(size='1rem') {{$icons.rub}}
                   v-row(v-if='prices.addresses.buyInBuyOut').send-order__price-payed-row
                     v-col(cols='6') Выручка / Выкуп
