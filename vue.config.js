@@ -2,6 +2,7 @@
 module.exports = {
   transpileDependencies: ['vuetify'],
   publicPath: process.env.NODE_ENV === 'production' ? 'https://api.sde.ru.com/form/' : '/',
+
   configureWebpack: {
     module: {
       rules: [
@@ -11,17 +12,27 @@ module.exports = {
           loader: 'eslint-loader',
           options: {
             fix: true,
-            formatter: 'prettier',
-          },
-        },
-      ],
-    },
+            formatter: 'prettier'
+          }
+        }
+      ]
+    }
   },
+
   css: {
     loaderOptions: {
       sass: {
-        prependData: '@import "@/assets/css/main.sass"',
-      },
-    },
+        prependData: '@import "@/assets/variables.sass"'
+      }
+    }
   },
+
+  pluginOptions: {
+    i18n: {
+      locale: 'ru',
+      fallbackLocale: 'ru',
+      localeDir: 'locales',
+      enableInSFC: true
+    }
+  }
 }
