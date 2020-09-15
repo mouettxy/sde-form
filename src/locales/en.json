@@ -1,0 +1,37 @@
+{
+  "makeOrder": "Make an order",
+  "map": "Map",
+  "homeMapMarkerTip": "\"From us\" as the beginning of all orders",
+  "invertColorsTip": "Change theme",
+  "changeLocaleTip": "Change locale",
+  "loginHint": "Enter the customer number in our system. If you are a new client please provide your company name.",
+  "loginLabel": "Customer ID in sde service",
+  "passwordHint": "Enter the client's password in our system.",
+  "passwordLabel": "Customer password in sde service",
+  "rememberMeLabel": "Remember me",
+  "newUserWelcome": "Welcome to sde",
+  "authIdText": "Authorized under ID",
+  "authUserText": "Customer:",
+  "logoutButtonTip": "Logout",
+  "addresses": "Addresses",
+  "orders": "Orders",
+
+  "title": "Delivery request",
+
+  "menu": {
+    "clientCabinet": "Customer cabinet",
+    "contacts": "Contacts",
+    "payment": "Payment",
+    "deliveryCost": "Delivery cost"
+  },
+
+  "userFavoriteAddresses": {
+    "searchLabel": "Search for available saved orders",
+    "successNotification": "The addresses are taken from the saved order, the search field will be cleared."
+  },
+
+  "userFavoriteAliases": {
+    "searchLabel": "Search for available saved addresses",
+    "successNotification": "The address has been successfully added, the search field will be cleared."
+  }
+}

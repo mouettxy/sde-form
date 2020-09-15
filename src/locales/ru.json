@@ -1,0 +1,37 @@
+{
+  "makeOrder": "Оформите заявку",
+  "map": "Карта",
+  "homeMapMarkerTip": "\"От нас\" как начало всех заявок",
+  "invertColorsTip": "Сменить тему",
+  "changeLocaleTip": "Сменить локализацию",
+  "loginHint": "Введите номер клиента в нашей системе. Если вы новый клиент укажите название компании.",
+  "loginLabel": "Номер клиента в системе sde",
+  "passwordHint": "Введите пароль клиента в нашей системе.",
+  "passwordLabel": "Пароль клиента в системе sde",
+  "rememberMeLabel": "Запомнить меня",
+  "newUserWelcome": "Добро пожаловать в sde",
+  "authIdText": "Авторизованы под ID",
+  "authUserText": "Пользователь:",
+  "logoutButtonTip": "Выйти из аккаунта",
+  "addresses": "Адреса",
+  "orders": "Заявки",
+
+  "title": "Заявка на доставку",
+
+  "menu": {
+    "clientCabinet": "Кабинет клиента",
+    "contacts": "Контакты",
+    "payment": "Оплата",
+    "deliveryCost": "Стоимость доставки"
+  },
+
+  "userFavoriteAddresses": {
+    "searchLabel": "Поиск по доступным заявкам",
+    "successNotification": "Адреса взяты из сохранённой заявки, поле поиска будет очищено."
+  },
+
+  "userFavoriteAliases": {
+    "searchLabel": "Поиск по доступным адресам",
+    "successNotification": "Адрес успешно добавлен, поле поиска будет очищено."
+  }
+}
