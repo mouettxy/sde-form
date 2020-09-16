@@ -1,5 +1,6 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import {
+  AddressFields,
   OrderAddress as Address,
   OrderInformation as Information,
   OrderPrices as Prices,
@@ -19,7 +20,11 @@ export default class Addresses extends VuexModule {
   public routes?: Route[] = undefined
 
   get isAddressesReachLimit() {
-    return (!isUndefined(this.addresses) && this.addresses.length > 5) || false
+    if (this.addresses.length > 5) {
+      return true
+    }
+
+    return false
   }
 
   get addressList() {
@@ -28,20 +33,18 @@ export default class Addresses extends VuexModule {
 
   @Mutation
   ADD_ADDRESS(payload: Address) {
-    if (!this.isAddressesReachLimit) {
-      this.addresses ? this.addresses.push(payload) : (this.addresses = [payload])
+    this.addresses ? this.addresses.push(payload) : (this.addresses = [payload])
 
-      let id = 1
-      lodashEach(this.addresses, (address) => {
-        address.id = id
-        id++
-      })
-    }
+    let id = 1
+    lodashEach(this.addresses, (address) => {
+      address.id = id
+      id++
+    })
   }
 
   @Mutation
   ADD_ORDER(payload: any) {
-    //
+    console.log(payload)
   }
 
   @Mutation
@@ -61,7 +64,12 @@ export default class Addresses extends VuexModule {
   }
 
   @Mutation
-  UPDATE_ORDER(payload: [Address]) {
+  UPDATE_FIELDS(payload: { id: number; fields: AddressFields }) {
+    lodashFilter(this.addresses, { id: payload.id })[0].fields = payload.fields
+  }
+
+  @Mutation
+  UPDATE_LIST(payload: Address[]) {
     this.addresses = payload
   }
 
@@ -70,22 +78,48 @@ export default class Addresses extends VuexModule {
     this.routes = payload
   }
 
+  @Mutation
+  UPDATE_INFO(payload: Information) {
+    this.information = payload
+  }
+
   @Action
   reset() {
     //
   }
 
   @Action
+  updateList(payload: Address[]) {
+    this.context.commit('UPDATE_LIST', payload)
+  }
+
+  @Action
   async add(payload?: Address) {
     if (payload) {
-      this.context.commit('ADD_ADDRESS', payload)
-      return Promise.resolve(true)
+      if (!this.isAddressesReachLimit) {
+        this.context.commit('ADD_ADDRESS', payload)
+        return Promise.resolve(true)
+      }
     }
+
+    return Promise.resolve(false)
   }
 
   @Action
   async addOrder(payload: any) {
     this.context.commit('ADD_ORDER', payload)
+    return Promise.resolve(true)
+  }
+
+  @Action
+  async updateFields(payload: { id: number; fields: AddressFields }) {
+    this.context.commit('UPDATE_FIELDS', payload)
+    return Promise.resolve(true)
+  }
+
+  @Action
+  async updateInfo(payload: Information) {
+    this.context.commit('UPDATE_INFO', payload)
     return Promise.resolve(true)
   }
 }
