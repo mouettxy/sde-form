@@ -16,6 +16,10 @@ import store from './store'
 
 Vue.config.productionTip = false
 
+if (Vue.$cookies.get('locale')) {
+  i18n.locale = Vue.$cookies.get('locale')
+}
+
 new Vue({
   vuetify,
   store,
