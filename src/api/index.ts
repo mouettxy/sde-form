@@ -78,8 +78,7 @@ export const getLatLon = async function(address: string) {
   coordinates = reverse(coordinates)
   return {
     lat: coordinates[0],
-    lon: coordinates[1],
-    geocoderResponse: response.data
+    lon: coordinates[1]
   }
 }
 
@@ -90,7 +89,6 @@ export const getLatLon = async function(address: string) {
 export const sendOrder = async (raw: any, processed: any, modern: any) => {
   try {
     const response = await http.post(endpoints.orders.send, { raw, processed, modern })
-    console.log(response)
     if (response.status !== 200) {
       return false
     }
