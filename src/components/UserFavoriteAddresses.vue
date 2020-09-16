@@ -39,14 +39,13 @@ export default class UserFavoriteAddresses extends Mixins(colors, breakpoints) {
   public sucMsg = ''
 
   get addressList() {
-    const getTrimmedAddressList = (addressList: Array<any>, index: number) => {
-      console.log(addressList[0].address, index)
+    const getTrimmedAddressList = (addressList: Array<any>) => {
       return `${addressList[0].address}<br>...<br>${addressList[addressList.length - 1].address}`
     }
     return lodashMap(this.addresses, (e, index) => ({
       id: index,
       name: e.name,
-      addresses: getTrimmedAddressList(e.addressList, index)
+      addresses: getTrimmedAddressList(e.addressList)
     }))
   }
 
