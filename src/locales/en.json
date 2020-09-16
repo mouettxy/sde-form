@@ -33,5 +33,47 @@
   "userFavoriteAliases": {
     "searchLabel": "Search for available saved addresses",
     "successNotification": "The address has been successfully added, the search field will be cleared."
+  },
+
+  "addressField": {
+    "header": "Choose address",
+    "btn": "Add address",
+    "hint": "The selected address will be shown in the address list ...",
+    "label": "Enter the address",
+    "errorOnSuggestionsFetch": "Failed to get suggestions, please try to reformulate your request.",
+    "errorAddressWithoutHome": "Please select address with house.",
+    "errorCannotGeocodeAddress": "Failed to get data on address. Try again or contact the site administration.",
+    "errorAddressAdd": "Unexpedted error when trying to add address. Try again or contact the site administration.",
+    "addressAdded": "Address added successfully."
+  },
+
+  "addressFields": {
+    "phoneLabel": "Phone",
+    "phoneHint": "The forwarder will be able to contact you, as well as notify you by SMS on arrival.",
+    "datetimeLabel": "When to pick up / deliver",
+    "datetimeClear": "Clear",
+    "datetimeApply": "Apply",
+    "buyoutLabel": "Proceeds",
+    "buyinLabel": "Buyout",
+    "bundlesLabel": "Bundles",
+    "bundlesHint": "Select item quantity. We are responsible for the composition of the order.",
+    "commentLabel": "Comment",
+    "commentHint": "Provide any additional information to the address.",
+    "takeInLabel": "Skid",
+    "takeOutLabel": "Takeaway",
+    "busLabel": "Meet / Send Bus"
+  },
+
+  "addressInfo": {
+    "commentLabel": "Comment",
+    "commentHint": "Provide any additional information to the address.",
+    "quickLabelText": "Express delivery",
+    "quickLabelPrice": "(+20% cost)",
+    "carLabelText": "Car required",
+    "carLabelPrice": "(+15% cost)",
+    "whoPays1": "From the proceeds",
+    "whoPays2": "Sender",
+    "whoPays3": "Recipient",
+    "whoPays4": "Customer"
   }
 }
