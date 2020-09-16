@@ -30,27 +30,27 @@ v-app
 
   v-main
     v-container.sde-form(fluid)
-      v-row(no-gutters)
+      v-row.sde-row(no-gutters)
         v-col(cols='12', lg='5', md='6')
-          v-card(elevation='0')
-            v-tabs(
-              v-model='activeTab',
-              :background-color='defaultTabColor',
-              :color='defaultTabTextColor',
-              next-icon='mdi-arrow-right',
-              prev-icon='mdi-arrow-left',
-              show-arrows,
-              grow
-            )
-              v-tab {{ $t("makeOrder") }}
-              v-tab(v-if='isMobile') {{ $t("map") }}
-            v-tabs-items(touchless, v-model='activeTab')
-              v-tab-item
-                OrderView(:state='state', @state-change='onStateChange')
-              v-tab-item(v-if='isMobile')
-                MapBlock
+          v-tabs(
+            v-model='activeTab',
+            :background-color='defaultTabColor',
+            :color='defaultTabTextColor',
+            next-icon='mdi-arrow-right',
+            prev-icon='mdi-arrow-left',
+            show-arrows,
+            grow
+          )
+            v-tab {{ $t("makeOrder") }}
+            v-tab(v-if='isMobile') {{ $t("map") }}
+            v-tab-item
+              order-view(:state='state', @state-change='onStateChange')
+            v-tab-item(v-if='isMobile')
+              keep-alive
+                map-block
         v-col(cols='12', lg='7', md='6', v-if='!isMobile')
-          MapBlock
+          keep-alive
+            map-block
 
   v-footer.px-2(padless, fixed, app, :color='defaultFooterColor')
     span {{ new Date().getFullYear() }} - sde
@@ -124,8 +124,10 @@ export default class App extends Mixins(colors, breakpoints) {
   changeLocale() {
     if (this.$i18n.locale === 'ru') {
       this.$i18n.locale = 'en'
+      this.$cookies.set('locale', 'en')
     } else {
       this.$i18n.locale = 'ru'
+      this.$cookies.set('locale', 'ru')
     }
   }
   defaultStartOrder() {
@@ -148,7 +150,6 @@ export default class App extends Mixins(colors, breakpoints) {
   }
 
   async mounted() {
-    console.log(this.$cookies)
     if (this.$cookies.get('dark-theme') === 'true') {
       this.$vuetify.theme.dark = true
     } else {
@@ -169,12 +170,12 @@ export default class App extends Mixins(colors, breakpoints) {
     }
 
     if (this.isMobile) {
-      this.activeTab = 2
+      this.activeTab = 1
       setTimeout(() => {
-        this.activeTab = 1
+        this.activeTab = 0
       }, 500)
     } else {
-      this.activeTab = 1
+      this.activeTab = 0
     }
 
     eventBus.$on('order-sended-saved', () => {
@@ -208,7 +209,7 @@ body
   width: 100%
 
 ::-webkit-scrollbar
-  width: 8px
+  width: 4px
 
 /* Track */
 ::-webkit-scrollbar-track
@@ -218,7 +219,7 @@ body
 /* Handle */
 ::-webkit-scrollbar-thumb
   background: #ffcc01
-  border-radius: 8px
+  border-radius: 0px
 
 input:-webkit-autofill
   -webkit-box-shadow: 0 0 0 50px #fafafa inset
@@ -229,12 +230,11 @@ input:-webkit-autofill:focus
   -webkit-box-shadow: 0 0 0 50px #fafafa inset
   -webkit-text-fill-color: #181818
 
-
 .sde-form
   height: $height-root-sde
   padding: 0 !important
 
-  .row
+  .sde-row
     height: $height-root-sde
 
 .menu
