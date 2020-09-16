@@ -17,7 +17,8 @@ import {
   map as lodashMap,
   each as lodashEach,
   round as lodashRound,
-  isUndefined
+  isUndefined,
+  debounce
 } from 'lodash'
 import { colors, breakpoints } from '@/mixins'
 import { addressesModule } from '@/store'
@@ -25,12 +26,11 @@ import { addressesModule } from '@/store'
 @Component
 export default class MapBlock extends Mixins(colors, breakpoints) {
   @Ref('map') map: any
-  private addressesProxy = addressesModule.addresses
   public lat = 45.035279
   public lng = 38.97412
   public lastAddressesSize?: number = undefined
 
-  @Watch('addressesProxy')
+  @Watch('addresses')
   onAddressesChange(addresses: any) {
     if (addresses === undefined) {
       addressesModule.UPDATE_ROUTES([])
@@ -38,6 +38,10 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
     if (lodashSize(addresses) !== this.lastAddressesSize) {
       this.renderRoute()
     }
+  }
+
+  get addresses() {
+    return addressesModule.addresses
   }
 
   get mapOptions() {
@@ -131,12 +135,12 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
     }
   }
   get google() {
-    return gmapApi
+    return gmapApi()
   }
-  DirectionsService() {
+  get DirectionsService() {
     return new this.google.maps.DirectionsService()
   }
-  DirectionsRenderer() {
+  get DirectionsRenderer() {
     const a = new this.google.maps.DirectionsRenderer()
     a.setMap(this.map.$mapObject)
     return a
@@ -227,9 +231,10 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
   }
 
   mounted() {
+    const debounced = debounce(this.renderRoute, 1000)
     this.$store.subscribe((mutation) => {
-      if (mutation.type === 'UPDATE_ORDER') {
-        this.renderRoute()
+      if (mutation.type === 'addresses/UPDATE_LIST') {
+        debounced()
       }
     })
 
@@ -239,7 +244,7 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
         this.lng = pos.coords.longitude
       },
       (err) => {
-        console.debug(err.code, err.message)
+        console.debug(err.message)
       },
       {
         enableHighAccuracy: true,
