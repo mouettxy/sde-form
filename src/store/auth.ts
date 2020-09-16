@@ -108,7 +108,6 @@ export default class Auth extends VuexModule {
       } else {
         try {
           const isMatch = await bcrypt.compare(password, user.password)
-          console.log(user.password, password)
           return isMatch
         } catch (err) {
           return Promise.resolve(false)
