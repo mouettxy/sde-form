@@ -7,8 +7,8 @@
           user-auth
           user-favorite
           address-picker
+          address-info
           // -
-            PickAddresses
             template(v-if='priceList')
             v-btn(color='primary', block, @click='toSendOrder()', v-if='priceList.overall') Вызвать экспедитора
             v-spacer
@@ -25,6 +25,7 @@ import { colors, breakpoints } from '@/mixins'
 import UserAuth from '@/components/UserAuth.vue'
 import UserFavorite from '@/components/UserFavorite.vue'
 import AddressPicker from '@/components/AddressPicker.vue'
+import AddressInfo from '@/components/AddressInfo.vue'
 
 import { authModule } from '@/store'
 
@@ -32,7 +33,8 @@ import { authModule } from '@/store'
   components: {
     UserAuth,
     UserFavorite,
-    AddressPicker
+    AddressPicker,
+    AddressInfo
   }
 })
 export default class OrderView extends Mixins(colors, breakpoints) {
