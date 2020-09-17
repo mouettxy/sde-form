@@ -33,7 +33,7 @@ export const eventBus = new Vue({
 
         each(addresses, (e, index) => {
           const m = moment()
-            .locale(this.$i18n.locale)
+            .locale('ru')
             .add(getTimeOffset(index), 'm')
 
           e.fields.datetime = `${m.format('L')} ${m.format('LT')}`
