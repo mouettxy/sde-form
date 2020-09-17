@@ -1,10 +1,12 @@
 <template lang="pug">
 .address-fields
   .address-header.primary(:class='{"mobile": isMobile, "desktop": !isMobile}')
-    slot(:on='showFields')
+    slot(:on='showFields', :show='show')
 
-  v-slide-y-transition
-    .address-main.elevation-1.my-2.pa-4(v-show='show')
+  v-slide-y-transition(mode='in-out')
+    .address-main.pa-4(v-show='show')
+      .address-main-buttons
+        slot(name='buttons', :remove='removeAddress')
       v-form(v-model='valid')
         v-row
           v-col(cols='12', lg='6', md='6')
@@ -172,6 +174,10 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
     } else {
       this.show = true
     }
+  }
+
+  removeAddress() {
+    addressesModule.REMOVE_ADDRESS(this.address.id)
   }
 
   mounted() {
