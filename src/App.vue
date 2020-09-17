@@ -164,7 +164,6 @@ export default class App extends Mixins(colors, breakpoints) {
     if (this.$cookies.get('fill-default-address')) {
       if (addressesModule.addressList.length <= 0) {
         const defaultAddress = lodashFilter(authModule.aliases, { name: 'От нас / К нам' })[0] as OrderAddress
-
         addressesModule.add(defaultAddress)
       }
     }
