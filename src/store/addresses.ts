@@ -83,6 +83,11 @@ export default class Addresses extends VuexModule {
     this.information = payload
   }
 
+  @Mutation
+  UPDATE_PRICES(payload: Prices) {
+    this.prices = payload
+  }
+
   @Action
   reset() {
     //
@@ -120,6 +125,12 @@ export default class Addresses extends VuexModule {
   @Action
   async updateInfo(payload: Information) {
     this.context.commit('UPDATE_INFO', payload)
+    return Promise.resolve(true)
+  }
+
+  @Action
+  async setPrices(payload: Prices) {
+    this.context.commit('UPDATE_PRICES', payload)
     return Promise.resolve(true)
   }
 }

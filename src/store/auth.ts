@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { isNull } from 'lodash'
 import Vue from 'vue'
 
-type User = {
+export type User = {
   CLIENT: string
   ADDR: string
   customer_name: string
@@ -33,14 +33,14 @@ type User = {
   region: string
 }
 
-type AuthInput = {
+export type AuthInput = {
   type: string
   login?: string
   password?: string
   needRemember?: boolean
 }
 
-type RelogInput = {
+export type RelogInput = {
   type: string
   id: number | string
 }

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import addresses from '@/store/addresses'
 import auth from '@/store/auth'
+import price from '@/store/price'
 
 import { getModule } from 'vuex-module-decorators'
 
@@ -13,7 +14,8 @@ export const store = new Vuex.Store({
   modules: {
     auth,
     addresses
-  }
+  },
+  plugins: [price]
 })
 
 export const authModule = getModule(auth, store)
