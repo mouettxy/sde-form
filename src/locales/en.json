@@ -56,12 +56,15 @@
     "buyoutLabel": "Proceeds",
     "buyinLabel": "Buyout",
     "bundlesLabel": "Bundles",
+    "bundlesCount": "Amount of bundles",
     "bundlesHint": "Select item quantity. We are responsible for the composition of the order.",
     "commentLabel": "Comment",
     "commentHint": "Provide any additional information to the address.",
     "takeInLabel": "Skid",
     "takeOutLabel": "Takeaway",
-    "busLabel": "Meet / Send Bus"
+    "busLabel": "Meet / Send Bus",
+    "removeTip": "Remove address from route list.",
+    "removeBtn": "Remove"
   },
 
   "addressInfo": {
@@ -71,9 +74,47 @@
     "quickLabelPrice": "(+20% cost)",
     "carLabelText": "Car required",
     "carLabelPrice": "(+15% cost)",
+    "whoPaysTitle": "Who pays",
     "whoPays1": "From the proceeds",
     "whoPays2": "Sender",
     "whoPays3": "Recipient",
     "whoPays4": "Customer"
+  },
+
+  "aliasField": {
+    "header": "Save address",
+    "label": "What is the name of address. For example: \"Client Artyushkova 15\"",
+    "hint": "We will save the address and the completed fields under the specified name. You can use this in the future to quickly fill out orders.",
+    "tip": "Saving the address in your account.",
+    "btn": "Save"
+  },
+
+  "orderField": {
+    "label": "Name of saved order",
+    "hint": "Select a name of saved order. For example: \"From us to customer number 1 \"",
+    "btn": "Save",
+    "header": "Save order",
+    "disclaimer": "If you save, the order will be sent!"
+  },
+
+  "orderPreview": {
+    "sendOrder": "Send",
+    "newClientDisclaimer": "Welcome to sde. Do not forget to contact the site administration for a permanent customer ID.",
+    "addressInfoTitle": "Add. information"
+  },
+
+  "pricesPreview": {
+    "title": "Pricing",
+    "distance": "Distance",
+    "distanceMeasure": "km.",
+    "additionals": "Additional services",
+    "buyInBuyOut": "Revenue / Buyout",
+    "bundles": "Bundles",
+    "quick": "Express delivery",
+    "car": "Delivery by car",
+    "additionalsCount": "Number of add. services",
+    "discount": "Customer discount",
+    "total": "Total",
+    "discounted": "With discount"
   }
 }
