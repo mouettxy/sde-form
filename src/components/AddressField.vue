@@ -24,7 +24,7 @@
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins/'
 import { addressesApi as api } from '@/api'
-import { debounce, map as lodashMap, reverse } from 'lodash'
+import { debounce, map as lodashMap } from 'lodash'
 import { addressesModule } from '@/store'
 
 @Component
