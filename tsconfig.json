@@ -13,40 +13,16 @@
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
-    "types": [
-      "webpack-env",
-      "vuetify",
-      "vue-cookies",
-      "webpack",
-      "webpack-env"
-    ],
-    "typeRoots": [
-      "./src/typings"
-    ],
+    "types": ["webpack-env", "vuetify", "vue-cookies", "webpack", "webpack-env"],
+    "typeRoots": ["./src/typings"],
     "paths": {
-      "!/*": [
-        "node_modules/*"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "!/*": ["node_modules/*"],
+      "@/*": ["src/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
+  "exclude": ["node_modules"]
 }
