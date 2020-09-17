@@ -2,20 +2,15 @@
 .order-view
   v-slide-x-transition(appear)
     template(v-show='state === "filling"')
-      .fields__addresses(flat)
-        .fields__addresses-wrap
-          user-auth
-          user-favorite
-          address-picker
-          address-info
-          // -
-            template(v-if='priceList')
-            v-btn(color='primary', block, @click='toSendOrder()', v-if='priceList.overall') Вызвать экспедитора
-            v-spacer
+      .order-view__cards
+        user-auth
+        user-favorite
+        address-picker
+        address-info
+        address-buttons
   v-slide-y-reverse-transition(leave-absolute, mode='out-in')
     template(v-if='state === "completing"')
       SendOrder(@back='fromSendOrder()')
-  .vertical-spacer
 </template>
 
 <script lang="ts">
@@ -26,6 +21,7 @@ import UserAuth from '@/components/UserAuth.vue'
 import UserFavorite from '@/components/UserFavorite.vue'
 import AddressPicker from '@/components/AddressPicker.vue'
 import AddressInfo from '@/components/AddressInfo.vue'
+import AddressButtons from '@/components/AddressButtons.vue'
 
 import { authModule } from '@/store'
 
@@ -34,7 +30,8 @@ import { authModule } from '@/store'
     UserAuth,
     UserFavorite,
     AddressPicker,
-    AddressInfo
+    AddressInfo,
+    AddressButtons
   }
 })
 export default class OrderView extends Mixins(colors, breakpoints) {
