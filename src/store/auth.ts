@@ -1,8 +1,9 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { clientApi as api } from '@/api/'
 import bcrypt from 'bcryptjs'
-import { isNull } from 'lodash'
+import { cloneDeep, isNull } from 'lodash'
 import Vue from 'vue'
+import { addressesModule } from '.'
 
 export type User = {
   CLIENT: string
@@ -98,6 +99,13 @@ export default class Auth extends VuexModule {
     this.temp = null
   }
 
+  @Mutation
+  UPDATE_ALIAS(payload: any) {
+    const aliases = cloneDeep(payload.aliases)
+    aliases.push(payload.payload)
+    ;(this.user as User).aliases = JSON.stringify(aliases)
+  }
+
   @Action
   async login(payload: AuthInput) {
     const passwordCheck = async (user: User, password: string): Promise<boolean> => {
@@ -188,6 +196,22 @@ export default class Auth extends VuexModule {
       } else {
         return Promise.resolve(false)
       }
+    }
+  }
+
+  @Action
+  async addAlias(payload: any) {
+    try {
+      const response = await api.setAliases((this.user as User).CLIENT, payload)
+      if (response.status === 200) {
+        this.UPDATE_ALIAS({ payload, aliases: this.aliases })
+        addressesModule.SET_IS_ALIAS(payload.id)
+        return Promise.resolve(true)
+      } else {
+        return Promise.resolve(false)
+      }
+    } catch (e) {
+      return Promise.resolve(false)
     }
   }
 }
