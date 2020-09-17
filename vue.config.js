@@ -33,6 +33,9 @@ module.exports = {
       fallbackLocale: 'ru',
       localeDir: 'locales',
       enableInSFC: true
+    },
+    moment: {
+      locales: ['ru', 'en']
     }
   }
 }
