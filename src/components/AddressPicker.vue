@@ -1,26 +1,30 @@
 <template lang="pug">
 v-card.elevation-3.address-picker(v-if='addressList.length > 0')
-  v-dialog(v-model='addressDialog', max-width='50%', :fullscreen='isMobile', transition='dialog-bottom-transition')
-    v-card
-      v-card-title
-        span {{ $t("addressField.header") }}
-        v-spacer
-        v-btn(icon, @click='addressDialog = false')
-          v-icon mdi-close
-      v-card-text
-        address-field
-
-  .add-address
-    v-btn(@click='addressDialog = true', :color='defaultAddAddressColor', text)
-      v-icon(left, :color='defaultAddAddressColor') mdi-plus
-      | {{ $t("addressField.btn") }}
+  add-address-dialog
+    template(#button='{open}')
+      .add-address
+        v-btn(@click='open', :color='defaultAddAddressColor', text)
+          v-icon(left, :color='defaultAddAddressColor') mdi-plus
+          | {{ $t("addressField.btn") }}
 
   draggable.address-list.py-8(v-model='addressList', @start='drag = true', @end='drag = false', v-bind='dragOptions')
     transition-group(type='transition', :name='!drag ? "list" : null')
       .address.elevation-1(v-for='address in addressList', :key='address.id')
         keep-alive
           address-fields(:address='address')
-            template(#default='{on}')
+            template(#buttons='{remove}')
+              v-row.text-center
+                v-col
+                  add-alias-dialog(:alias='address', v-if='!address.isAlias')
+                    template(#button='{open}')
+                      v-btn(@click='open', color='success', text, :content='$t("aliasField.tip")', v-tippy)
+                        v-icon(left) mdi-bookmark-plus
+                        | {{$t("aliasField.btn")}}
+                v-col
+                  v-btn(@click='remove', color='error', text, :content='$t("addressFields.removeTip")', v-tippy)
+                    v-icon(left) mdi-trash-can
+                    | {{$t("addressFields.removeBtn")}}
+            template(#default='{on, show}')
               template(v-if='isMobile')
                 v-row.buttons-row
                   v-col
@@ -29,7 +33,10 @@ v-card.elevation-3.address-picker(v-if='addressList.length > 0')
                         v-icon mdi-cursor-move
                   v-col
                     v-btn.address-settings-btn(@click='on', icon)
-                      v-icon mdi-cog
+                      template(v-if='show')
+                        v-icon mdi-close
+                      template(v-else)
+                        v-icon mdi-cog
                 v-row.address-name-row
                   span.address-name {{address.address}}
               template(v-else)
@@ -38,14 +45,18 @@ v-card.elevation-3.address-picker(v-if='addressList.length > 0')
                     v-icon mdi-cursor-move
                 span.address-name {{address.address}}
                 v-btn.address-settings-btn(@click='on', icon)
-                  v-icon mdi-cog
+                  template(v-if='show')
+                    v-icon mdi-close
+                  template(v-else)
+                    v-icon mdi-cog
 </template>
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { breakpoints, colors } from '@/mixins'
 
-import AddressField from '@/components/AddressField.vue'
+import AddAliasDialog from '@/components/dialogs/AddAliasDialog.vue'
+import AddAddressDialog from '@/components/dialogs/AddAddressDialog.vue'
 import AddressFields from '@/components/AddressFields.vue'
 import draggable from 'vuedraggable'
 
@@ -53,13 +64,13 @@ import { addressesModule } from '@/store'
 
 @Component({
   components: {
-    AddressField,
+    AddAliasDialog,
+    AddAddressDialog,
     draggable,
     AddressFields
   }
 })
 export default class AddressPicker extends Mixins(breakpoints, colors) {
-  public addressDialog = false
   public drag = false
 
   get dragOptions() {
