@@ -255,7 +255,7 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
 
     setInterval(() => {
       if (this.map) {
-        if (this.map.$mapObject.getZoom() <= 10) {
+        if (this.map.$mapObject && this.map.$mapObject.getZoom() <= 10) {
           this.map.$mapObject.setZoom(12)
         }
       }

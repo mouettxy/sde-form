@@ -78,8 +78,7 @@ export default class UserFavoriteAddresses extends Mixins(colors, breakpoints) {
     }
   }
 
-  filter(item: any, queryText: string, itemText: string) {
-    console.log(item, queryText, itemText)
+  filter(item: any, queryText: string) {
     return item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
   }
 

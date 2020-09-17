@@ -31,12 +31,10 @@ class Price {
     if (!this.settings) {
       this.settings = priceSettings['default']
     }
-
-    console.debug(this)
   }
 
   addressesPrice() {
-    if (isEmpty(this.addresses)) {
+    if (!isEmpty(this.addresses)) {
       const additionals = this.additionals()
 
       return additionals
@@ -138,6 +136,7 @@ class Price {
         accumulate += this.settings.additionals.takeOut
       }
       if (e.fields.bus) {
+        console.log('bus added')
         entries += 1
         accumulate += this.settings.additionals.bus
       }
@@ -174,7 +173,6 @@ class Price {
       let price = this.mileage(this.route.overallDistance, rate)
 
       if (isNaN(price) || isNull(price) || isUndefined(price)) {
-        console.debug('Routes price incorrect for some reason ...')
         price = 0
       }
 
@@ -224,7 +222,6 @@ class Price {
         return parseInt(tPriceFinally) * parseInt(tModifierFinally)
       }
     } catch (e) {
-      console.debug(e)
       return 0
     }
   }
@@ -280,9 +277,6 @@ class Price {
       priceList.overall = 0
     }
 
-    console.debug('Setting price list ...')
-    console.debug(priceList)
-
     addressesModule.setPrices(priceList)
   }
 }
@@ -297,7 +291,6 @@ export default (store: Store<any>) => {
       'addresses/UPDATE_INFO'
     ]
     if (includes(affectedMutations, mutation.type)) {
-      console.log(mutation)
       const price = new Price(priceSettings)
 
       const debounced = debounce(price.get.bind(price), 500)
