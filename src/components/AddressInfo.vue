@@ -34,6 +34,7 @@ v-slide-y-transition
               | {{$t("addressInfo.carLabelPrice")}}
         v-col(cols='12', lg='6', md='6')
           v-radio-group(v-model='info.whoPays', :color='defaultInputColor')
+            template(#label) {{$t("addressInfo.whoPaysTitle")}}
             v-radio(
               :color='defaultInputColor',
               :label='$t("addressInfo.whoPays1")',
@@ -67,8 +68,17 @@ export default class AddressInfo extends Mixins(colors, breakpoints) {
     this.debounced(val)
   }
 
+  @Watch('information', { deep: true })
+  onInformationVuexChange(val: import('@/typings/order').OrderInformation) {
+    this.info = val
+  }
+
   get addresses() {
-    return addressesModule.addressList
+    return addressesModule.addresses
+  }
+
+  get information() {
+    return addressesModule.information
   }
 
   get isBuyoutExists() {
@@ -76,7 +86,10 @@ export default class AddressInfo extends Mixins(colors, breakpoints) {
       reduce(
         this.addresses,
         (a, n) => {
-          return a + n.fields.buyout
+          if (n.fields) {
+            return a + n.fields.buyout
+          }
+          return 0
         },
         0
       ) > 0
@@ -86,7 +99,6 @@ export default class AddressInfo extends Mixins(colors, breakpoints) {
   created() {
     if (authModule.user) {
       const user = authModule.user
-      console.log(user, 'info')
       if (typeof user !== 'string') {
         if (user.payment_who) {
           this.info.whoPays = user.payment_who
