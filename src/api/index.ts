@@ -18,6 +18,10 @@ export const getAliases = async (id: number) => {
   return await http.get(endpoints.client(id).aliases)
 }
 
+export const setAliases = async (id: number | string, payload: any) => {
+  return await http.post(endpoints.client(id).aliases, payload)
+}
+
 export const getAddresses = async (id: number) => {
   return await http.get(endpoints.client(id).addresses)
 }
@@ -121,7 +125,8 @@ export const clientApi = {
   getAliases,
   loginClient,
   renewToken,
-  saveOrder
+  saveOrder,
+  setAliases
 }
 
 export const addressesApi = {
