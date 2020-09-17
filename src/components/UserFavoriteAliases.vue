@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Ref } from 'vue-property-decorator'
+import { Component, Mixins, Prop } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins'
 import { addressesModule } from '@/store'
 import { map as lodashMap, cloneDeep } from 'lodash'
@@ -74,7 +74,7 @@ export default class UserFavoriteAliases extends Mixins(colors, breakpoints) {
     }
   }
 
-  filter(item: any, queryText: string, itemText: string) {
+  filter(item: any, queryText: string) {
     return (
       item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 ||
       item.address.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
