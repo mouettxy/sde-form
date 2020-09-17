@@ -39,7 +39,17 @@ export type OrderPrices = {
   additionals: number
 }
 
-export type OrderRoute = {
+export type OrderRoutes = {
   to: string
   from: string
+  timeString: string
+  time: number
+  distance: number
+}
+
+export type OrderRoute = {
+  routes: OrderRoute[]
+  overallDistance: number
+  overallTime: number
+  overallTimeString: string
 }

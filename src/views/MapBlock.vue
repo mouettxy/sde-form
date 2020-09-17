@@ -33,7 +33,7 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
   @Watch('addresses')
   onAddressesChange(addresses: any) {
     if (addresses === undefined) {
-      addressesModule.UPDATE_ROUTES([])
+      addressesModule.UPDATE_ROUTES(null)
     }
     if (lodashSize(addresses) !== this.lastAddressesSize) {
       this.renderRoute()

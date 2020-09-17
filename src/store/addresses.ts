@@ -15,9 +15,9 @@ import { filter as lodashFilter, isUndefined, each as lodashEach } from 'lodash'
 })
 export default class Addresses extends VuexModule {
   public addresses: Address[] = []
-  public information?: Information = undefined
-  public prices?: Prices = undefined
-  public routes?: Route[] = undefined
+  public information: Information | null = null
+  public prices: Prices | null = null
+  public routes: Route | null = null
 
   get isAddressesReachLimit() {
     if (this.addresses.length > 5) {
@@ -74,7 +74,7 @@ export default class Addresses extends VuexModule {
   }
 
   @Mutation
-  UPDATE_ROUTES(payload?: OrderRoute[]) {
+  UPDATE_ROUTES(payload: OrderRoute | null) {
     this.routes = payload
   }
 
