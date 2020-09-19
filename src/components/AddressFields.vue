@@ -13,6 +13,7 @@
             v-text-field(
               ref='phoneField',
               v-model='fields.phone',
+              @focus='onFieldFocus',
               :color='defaultInputColor',
               :label='$t("addressFields.phoneLabel")',
               :hint='$t("addressFields.phoneHint")',
@@ -42,6 +43,7 @@
           v-col(cols='12', lg='4', md='4')
             v-text-field(
               v-model.number='fields.buyout',
+              @focus='onFieldFocus',
               :color='defaultInputColor',
               :label='$t("addressFields.buyoutLabel")',
               prepend-inner-icon='mdi-tray-minus',
@@ -50,6 +52,7 @@
           v-col(cols='12', lg='4', md='4')
             v-text-field(
               v-model.number='fields.buyin',
+              @focus='onFieldFocus',
               :color='defaultInputColor',
               :label='$t("addressFields.buyinLabel")',
               prepend-inner-icon='mdi-tray-plus',
@@ -58,6 +61,7 @@
           v-col(cols='12', lg='4', md='4')
             v-text-field(
               v-model.number='fields.bundles',
+              @focus='onFieldFocus',
               :color='defaultInputColor',
               :label='$t("addressFields.bundlesLabel")',
               :hint='$t("addressFields.bundlesHint")',
@@ -67,6 +71,7 @@
           v-col(cols='12')
             v-textarea(
               v-model='fields.comment',
+              @focus='onFieldFocus',
               :color='defaultInputColor',
               :label='$t("addressFields.commentLabel")',
               :hint='$t("addressFields.commentHint")',
@@ -189,6 +194,23 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
     addressesModule.REMOVE_ADDRESS(this.address.id)
   }
 
+  onFieldFocus(event: FocusEvent) {
+    const el = event.target as HTMLElement
+
+    if (el) {
+      if (this.isMobile) {
+        const pos = el.style.position
+        const top = (el.style.position = 'relative')
+        el.style.top = '-25px'
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        el.style.top = top
+        el.style.position = pos
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }
+
   mounted() {
     if (this.address.fields) {
       this.fields = this.address.fields
@@ -204,3 +226,13 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
   }
 }
 </script>
+
+<style lang="sass">
+.address-fields
+  .address-main
+    .row
+      .col-md-4, .col-lg-4, .col-12, .col, .col-6
+        padding: 0
+        padding-left: 12px
+        padding-right: 12px
+</style>

@@ -6,6 +6,7 @@ v-slide-y-transition
         v-col(cols='12')
           v-textarea(
             v-model='info.comment',
+            @focus='onFieldFocus',
             :color='defaultInputColor',
             :label='$t("addressInfo.commentLabel")',
             :hint='$t("addressInfo.commentHint")',
@@ -94,6 +95,23 @@ export default class AddressInfo extends Mixins(colors, breakpoints) {
         0
       ) > 0
     )
+  }
+
+  onFieldFocus(event: FocusEvent) {
+    const el = event.target as HTMLElement
+
+    if (el) {
+      if (this.isMobile) {
+        const pos = el.style.position
+        const top = (el.style.position = 'relative')
+        el.style.top = '-25px'
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        el.style.top = top
+        el.style.position = pos
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
   }
 
   created() {

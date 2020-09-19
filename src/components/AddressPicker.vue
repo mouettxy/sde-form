@@ -30,13 +30,13 @@ v-card.elevation-3.address-picker(v-if='user')
             template(#default='{on, show}')
               template(v-if='isMobile')
                 span.address-header__buttons
-                  v-btn#tour-address-move.address-move(icon, small)
-                    v-icon mdi-cursor-move
-                  v-btn#tour-address-settings.address-settings-btn(@click='on', icon, small)
+                  v-btn#tour-address-move.address-move(icon)
+                    v-icon(size='2rem') mdi-cursor-move
+                  v-btn#tour-address-settings.address-settings-btn(@click='on', icon)
                     template(v-if='show')
-                      v-icon mdi-close
+                      v-icon(size='2rem') mdi-close
                     template(v-else)
-                      v-icon mdi-cog
+                      v-icon(size='2rem') mdi-cog
                 span {{address.address}}
               template(v-else)
                 .address-move
@@ -143,6 +143,10 @@ export default class AddressPicker extends Mixins(breakpoints, colors) {
             flex-direction: column
             padding: 2px
             margin-right: 8px
+
+          span
+            font-size: 1.1rem
+            padding: 4px
 
     &:first-child
       margin-top: 0
