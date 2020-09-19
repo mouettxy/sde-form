@@ -24,7 +24,7 @@ import AnimatedNumber from 'animated-number-vue'
 })
 export default class PriceLabel extends Mixins(colors, breakpoints) {
   get pricesOverall() {
-    return addressesModule.prices?.overall || undefined
+    return addressesModule.prices?.discounted || undefined
   }
 
   formatToPrice(value: string | number) {
