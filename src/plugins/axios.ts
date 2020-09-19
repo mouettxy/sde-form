@@ -48,7 +48,7 @@ _axios.interceptors.request.use(
       .slice(0, 19)
       .replace(/-/g, '/')
       .replace('T', ' ')
-    console.debug(`${time} | sending request to ${config.baseURL}`)
+    // console.debug(`${time} | sending request to ${config.url}`)
 
     return config
   },
@@ -58,7 +58,7 @@ _axios.interceptors.request.use(
       .slice(0, 19)
       .replace(/-/g, '/')
       .replace('T', ' ')
-    console.debug(`${time} | error on sending request to ${config.baseURL}`, error)
+    // console.debug(`${time} | error on sending request to ${config.baseURL}`, error)
 
     return Promise.reject(error)
   }
@@ -72,7 +72,7 @@ _axios.interceptors.response.use(
       .slice(0, 19)
       .replace(/-/g, '/')
       .replace('T', ' ')
-    console.debug(`${time} | getting response`, response)
+    // console.debug(`${time} | getting response`, response)
 
     return { data: response.data, status: response.status }
   },
@@ -82,7 +82,7 @@ _axios.interceptors.response.use(
       .slice(0, 19)
       .replace(/-/g, '/')
       .replace('T', ' ')
-    console.debug(`${time} | error with response`, error)
+    // console.debug(`${time} | error with response`, error)
 
     return Promise.reject(error)
   }
