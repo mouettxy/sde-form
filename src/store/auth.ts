@@ -125,14 +125,13 @@ export default class Auth extends VuexModule {
       return Promise.resolve(false)
     }
 
-    const authorizeUser = async (user: User, password: string, needToRemember = false) => {
+    const authorizeUser = async (user: User, password: string) => {
       const isPasswordsMatch = await passwordCheck(user, password)
 
       if (isPasswordsMatch) {
         this.context.commit('SET_USER', user)
-        if (needToRemember) {
-          Vue.prototype.$cookies.set('remembered-id', user.CLIENT)
-        }
+        Vue.$cookies.set('remembered-id', user.CLIENT)
+
         return Promise.resolve({ type: 'success', message: 'Успешная авторизация' })
       } else {
         return Promise.resolve({ type: 'error', message: 'Неверный пароль' })
@@ -143,7 +142,6 @@ export default class Auth extends VuexModule {
       if (payload.login && !payload.password) {
         try {
           const response = await api.getClient(payload.login)
-
           if (response.status === 200) {
             this.context.commit('SAVE_TEMP_USER_DATA', response.data)
             return { type: 'need-password', message: '' }
@@ -157,13 +155,13 @@ export default class Auth extends VuexModule {
         }
       } else if (payload.login && payload.password) {
         if (this.temp) {
-          return await authorizeUser(this.temp, payload.password, payload.needRemember)
+          return await authorizeUser(this.temp, payload.password)
         } else {
           try {
             const response = await api.getClient(payload.login)
 
             if (response.status === 200) {
-              return await authorizeUser(response.data, payload.password, payload.needRemember)
+              return await authorizeUser(response.data, payload.password)
             } else {
               return { type: 'error', message: 'Ошибка сервера, проверьте данные.' }
             }
@@ -181,6 +179,7 @@ export default class Auth extends VuexModule {
   logout() {
     Vue.prototype.$cookies.remove('remembered-id')
     this.context.commit('REMOVE_USER')
+    addressesModule.reset(true)
 
     return true
   }
@@ -197,6 +196,8 @@ export default class Auth extends VuexModule {
         return Promise.resolve(false)
       }
     }
+
+    return Promise.resolve(false)
   }
 
   @Action
