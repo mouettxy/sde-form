@@ -1,6 +1,6 @@
 <template lang="pug">
 .address-fields
-  .address-header.primary(:class='{"mobile": isMobile, "desktop": !isMobile}')
+  .address-header.primary(:class='{"mobile": isMobile, "desktop": !isMobile}', ref='header')
     slot(:on='showFields', :show='show')
 
   v-slide-y-transition(mode='in-out')
@@ -11,6 +11,7 @@
         v-row
           v-col(cols='12', lg='6', md='6')
             v-text-field(
+              ref='phoneField',
               v-model='fields.phone',
               :color='defaultInputColor',
               :label='$t("addressFields.phoneLabel")',
@@ -79,10 +80,12 @@
             v-switch(:color='defaultInputColor', v-model='fields.takeOut', :label='$t("addressFields.takeOutLabel")')
           v-col(cols='12')
             v-switch(:color='defaultInputColor', v-model='fields.bus', :label='$t("addressFields.busLabel")')
+      v-btn(block, text, @click='showFields')
+        v-icon mdi-arrow-up-drop-circle-outline
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch, Ref } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins'
 import { AddressFields as TAddressFields, OrderAddress } from '@/typings/order'
 import moment from 'moment'
@@ -97,6 +100,8 @@ import VDatetimePicker from '@/components/third-party/DatetimePicker.vue'
   }
 })
 export default class AddressFields extends Mixins(colors, breakpoints) {
+  @Ref('header') header: any
+  @Ref('phoneField') phoneField: any
   @Prop(Object) address!: OrderAddress
   private debounced: any = debounce(addressesModule.updateFields, 500)
   public show = false
@@ -171,8 +176,12 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
   showFields() {
     if (this.show) {
       this.show = false
+      this.header.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
     } else {
       this.show = true
+      setTimeout(() => {
+        this.phoneField.$el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+      }, 100)
     }
   }
 
