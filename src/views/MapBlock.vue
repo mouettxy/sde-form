@@ -236,6 +236,10 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
       if (mutation.type === 'addresses/UPDATE_LIST') {
         debounced()
       }
+
+      if (mutation.type === 'addresses/RESET_STATE') {
+        this.DirectionsRenderer.set('directions', null)
+      }
     })
 
     navigator.geolocation.getCurrentPosition(
