@@ -1,6 +1,6 @@
 <template lang="pug">
 v-slide-y-transition
-  v-card.address-info.elevation-3(v-if='addresses.length >= 2')
+  v-card.address-info.elevation-3(v-if='addresses.length')
     v-form(v-model='valid')
       v-row
         v-col(cols='12')
