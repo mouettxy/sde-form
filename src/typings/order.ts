@@ -17,7 +17,7 @@ export type OrderAddress = {
   id: number
   isAlias: boolean
   lat: number
-  lng: number
+  lon: number
   name: string
 }
 
