@@ -47,9 +47,9 @@ export const formatAddress = (address: OrderAddress) => {
 export const formatData = (
   client: User | string | null,
   addresses: OrderAddress[],
-  info: OrderInformation,
-  routes: OrderRoute,
-  prices: OrderPrices
+  info: OrderInformation | null,
+  routes: OrderRoute | null,
+  prices: OrderPrices | null
 ) => {
   /* eslint-disable @typescript-eslint/camelcase */
   const fields = (id: number) => {
@@ -90,7 +90,7 @@ export const formatData = (
     время_выполнения: fields(size(addresses) - 1).datetime || '',
     откуда: from,
     куда: to,
-    автомобиль: info.car ? 'Требуется автомобиль' : false,
+    автомобиль: info?.car ? 'Требуется автомобиль' : false,
     номер_клиента: !isNewUser(client) ? client.CLIENT : client,
     кто: !isNewUser(client) ? client.customer_name : '',
     телефон_клиента: !isNewUser(client) ? client.customer_phone : '',
@@ -99,15 +99,15 @@ export const formatData = (
     промокод: !isNewUser(client) ? client.who_attracted : '',
     скидка: !isNewUser(client) ? client.discount : '',
     условия_оплаты: !isNewUser(client) ? client.payment_type : '',
-    кто_платит: info.whoPays || '',
+    кто_платит: info?.whoPays || '',
     кто_везёт: !isNewUser(client) ? (client.stop_delivery === '1' ? 'не возим' : '') : '',
-    пробег: routes.overallDistance,
-    время_в_пути: routes.overallTimeString,
-    'стоимость допов': prices.additionals || '',
-    стоимость: prices.overall || '',
-    стоимость_со_скидкой: prices.discounted || prices.overall || '',
+    пробег: routes?.overallDistance || '',
+    время_в_пути: routes?.overallTimeString || '',
+    'стоимость допов': prices?.additionals || '',
+    стоимость: prices?.overall || '',
+    стоимость_со_скидкой: prices?.discounted || prices?.overall || '',
     выручка: buyin,
-    комментарий: info.comment || ''
+    комментарий: info?.comment || ''
   }
 
   const id = 'id'
@@ -216,12 +216,12 @@ export const formatData = (
 
   const raw = {
     customer: !isNewUser(client) ? client.CLIENT : client,
-    komment: info.comment || '',
-    kto_opl_dost: info.whoPays || '',
+    komment: info?.comment || '',
+    kto_opl_dost: info?.whoPays || '',
     route_opt: '',
-    srochno: info.quick || '',
+    srochno: info?.quick || '',
     summ_pay: buyin || '',
-    car: info.car ? 'Требуется автомобиль' : '',
+    car: info?.car ? 'Требуется автомобиль' : '',
     ...rawMappingsModified
   }
 
@@ -244,7 +244,7 @@ export const formatData = (
     info: info,
     price: prices,
     route: routes,
-    car: info.car ? 'Требуется автомобиль' : false,
+    car: info?.car ? 'Требуется автомобиль' : false,
     client: !isNewUser(client) ? client.CLIENT : client,
     clientName: !isNewUser(client) ? client.customer_name : '',
     clientPhone: !isNewUser(client) ? client.customer_phone : '',
@@ -253,15 +253,15 @@ export const formatData = (
     promo: !isNewUser(client) ? client.who_attracted : '',
     discount: !isNewUser(client) ? client.discount : '',
     payCondition: !isNewUser(client) ? client.payment_type : '',
-    payWho: info.whoPays || '',
+    payWho: info?.whoPays || '',
     whoWork: !isNewUser(client) ? (client.stop_delivery === '1' ? 'не возим' : '') : '',
-    mileage: routes.overallDistance,
-    timeInWay: routes.overallTimeString,
-    costAdditionals: prices.additionals || '',
-    cost: prices.overall || '',
-    costDiscount: prices.discounted || prices.overall || '',
+    mileage: routes?.overallDistance || '',
+    timeInWay: routes?.overallTimeString || '',
+    costAdditionals: prices?.additionals || '',
+    cost: prices?.overall || '',
+    costDiscount: prices?.discounted || prices?.overall || '',
     buyin: buyin,
-    comment: info.comment || ''
+    comment: info?.comment || ''
   }
 
   return { raw, processed, modern }
