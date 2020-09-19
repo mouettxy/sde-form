@@ -136,7 +136,6 @@ class Price {
         accumulate += this.settings.additionals.takeOut
       }
       if (e.fields.bus) {
-        console.log('bus added')
         entries += 1
         accumulate += this.settings.additionals.bus
       }
@@ -284,10 +283,14 @@ class Price {
 export default (store: Store<any>) => {
   store.subscribe((mutation) => {
     const affectedMutations = [
+      'addresses/RESET_STATE',
       'addresses/ADD_ADDRESS',
       'addresses/ADD_ORDER',
       'addresses/REMOVE_ADDRESS',
+      'addresses/UPDATE_ADDRESSES',
       'addresses/UPDATE_FIELDS',
+      'addresses/UPDATE_LIST',
+      'addresses/UPDATE_ROUTES',
       'addresses/UPDATE_INFO'
     ]
     if (includes(affectedMutations, mutation.type)) {
