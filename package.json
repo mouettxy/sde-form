@@ -58,6 +58,7 @@
     "@vue/eslint-config-typescript": "^5.0.2",
     "axios": "^0.18.0",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-transform-imports": "^2.0.0",
     "css-loader": "^4.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-compat": "^3.8.0",
@@ -81,6 +82,7 @@
     "vue-cli-plugin-i18n": "^1.0.1",
     "vue-cli-plugin-moment": "~0.1.1",
     "vue-cli-plugin-vuetify": "^2.0.7",
+    "vue-cli-plugin-webpack-bundle-analyzer": "~2.0.0",
     "vue-loader": "^15.9.3",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "1.6.0"
