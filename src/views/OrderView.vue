@@ -7,10 +7,11 @@
         user-favorite
         address-picker
         address-info
-        address-buttons(@previw='toPreview')
+        address-buttons(@preview='toPreview')
   v-slide-y-reverse-transition(leave-absolute, mode='out-in')
     template(v-if='state === "preview"')
       order-preview(@back='fromPreview')
+  .vertical-spacer
 </template>
 
 <script lang="ts">
@@ -25,6 +26,7 @@ import AddressButtons from '@/components/AddressButtons.vue'
 import OrderPreview from '@/views/OrderPreview.vue'
 
 import { authModule } from '@/store'
+import eventBus from '@/eventBus'
 
 @Component({
   components: {
@@ -44,21 +46,22 @@ export default class OrderView extends Mixins(colors, breakpoints) {
   }
 
   fromPreview() {
-    this.state = 'order'
+    eventBus.$emit('change-order-view', 'order')
   }
 
   toPreview() {
-    this.state = 'preview'
+    eventBus.$emit('change-order-view', 'preview')
   }
 }
 </script>
 
 <style lang="sass">
 .order-view
+  position: relative
   padding: 12px
   overflow-y: scroll
   height: $height-mobile-sde
 
   .vertical-spacer
-    height: 256px
+    height: 64px
 </style>
