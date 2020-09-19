@@ -1,9 +1,9 @@
 <template lang="pug">
 v-card
   v-card-title.secondary
-    v-icon(size='1.4rem', color='#181818') {{$icons.info}}
+    v-icon(size='1.4rem', color='#181818') mdi-information
     span {{$t("orderPreview.addressInfoTitle")}}
-  v-card-text.send-order__info-text
+  v-card-text.send-order__info-text(v-if='info')
     v-list-item(two-line, v-if='info.comment')
       v-list-item-content
         v-list-item-title {{$t("addressInfo.commentLabel")}}
