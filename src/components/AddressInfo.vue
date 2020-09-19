@@ -52,6 +52,7 @@ import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins'
 import { reduce, debounce } from 'lodash'
 import { authModule, addressesModule } from '@/store'
+import { parse } from 'date-fns'
 
 @Component
 export default class AddressInfo extends Mixins(colors, breakpoints) {
@@ -83,18 +84,8 @@ export default class AddressInfo extends Mixins(colors, breakpoints) {
   }
 
   get isBuyoutExists() {
-    return (
-      reduce(
-        this.addresses,
-        (a, n) => {
-          if (n.fields) {
-            return a + n.fields.buyout
-          }
-          return 0
-        },
-        0
-      ) > 0
-    )
+    const buyout = reduce(this.addresses, (a, n) => (n.fields && n.fields.buyout > 0 ? a + n.fields.buyout : a + 0), 0)
+    return buyout > 0
   }
 
   onFieldFocus(event: FocusEvent) {
