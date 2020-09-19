@@ -3,17 +3,17 @@ v-card.order-preview(:class='{"mobile": isMobile}')
   v-card-title
     .order-preview__header
       v-btn(icon, @click='closePreview', size='60px')
-        v-icon {{ $icons.leftArrow }}
+        v-icon mdi-arrow-left
       span Оформление заявки
-  v-card-text
-    v-card.order-preview__main.elevation-3
+  v-card-text.order-preview__main
+    v-card.order-preview__main-wrap.elevation-3
       v-timeline(dense)
         v-timeline-item.order-preview__buttons(icon='mdi-check')
           v-card.pa-2
-            v-btn(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
-            add-order-dialog
-              template(#buttons='{openDialog}')
-                v-btn(color='primary', block, @click='openDialog')
+            v-btn.my-2(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
+            add-order-dialog(@save-start='closePreview')
+              template(#buttons='{open}')
+                v-btn(color='primary', block, @click='open') {{ $t("orderField.btn") }}
         v-timeline-item.order-preview__client(icon='mdi-account')
           v-card
             v-card-title.secondary.send-order__client-header.text-wrap
@@ -30,16 +30,16 @@ v-card.order-preview(:class='{"mobile": isMobile}')
           icon='mdi-map-marker'
         )
           address-preview(:address='address')
-        v-timeline-item.send-order__info(fill-dot, small, :icon='$icons.info', v-if='addresses')
+        v-timeline-item.send-order__info(fill-dot, small, icon='mdi-information', v-if='addresses')
           address-info-preview(:info='information')
         v-timeline-item.send-order__price(icon='mdi-cash-marker')
-          address-prices-preview(:prices='prices')
+          address-prices-preview(:prices='prices', :routes='routes', :info='information', :user='user')
         v-timeline-item.order-preview__buttons(icon='mdi-check')
           v-card.pa-2
-            v-btn(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
-            add-order-dialog
-              template(#buttons='{openDialog}')
-                v-btn(color='primary', block, @click='openDialog')
+            v-btn.my-2(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
+            add-order-dialog(@save-start='closePreview')
+              template(#buttons='{open}')
+                v-btn(color='primary', block, @click='open') {{ $t("orderField.btn") }}
 </template>
 
 <script>
@@ -82,7 +82,7 @@ export default class OrderPreview extends Mixins(colors, breakpoints) {
     return cloneDeep(authModule.user)
   }
 
-  get isNewUser() {
+  get isNewClient() {
     return typeof authModule.user === 'string'
   }
 
@@ -90,133 +90,36 @@ export default class OrderPreview extends Mixins(colors, breakpoints) {
     this.$emit('back')
   }
 
-  /* async callExpeditor(needSave) {
-      if (needSave) {
-        if (!this.addressSaveName) {
-          this.addressSaveErrors = 'Обязательно укажите имя сохранённого адреса.'
-          return
-        }
+  async sendOrder() {
+    this.closePreview()
+    const response = await addressesModule.sendOrder()
 
-        if (
-          _.includes(
-            _.map(this.client.saved_orders, (e) => e.name),
-            this.addressSaveName
-          )
-        ) {
-          this.addressSaveErrors = 'Адрес с таким именем уже существует'
-          return
-        }
-
-        const results = this.formatData()
-        const state = {
-          name: this.addressSaveName,
-          addressInfo: this.addressInfo,
-          addressList: this.addressList,
-          priceList: this.priceList,
-          route: this.route
-        }
-
-        this.SEND_ORDER({ results, state, needSave })
-      } else {
-        const results = this.formatData()
-
-        this.SEND_ORDER({ results })
-      }
-    }, */
+    switch (response.status) {
+      case 'ERROR':
+        this.$notification.error(response.message)
+        break
+      case 'ERROR-SAVED':
+        this.$notification.error(response.message)
+        break
+      case 'OK':
+        this.$notification.success(response.message)
+        break
+      case 'OK-SAVED':
+        this.$notification.success(response.message)
+        break
+    }
+  }
 }
 </script>
 
-<style lang="stylus">
-colors = {
-  primary: #ffcc01,
-  black: #181818,
-  secondary: #E0E0E0,
-  white: #fff
-}
+<style lang="sass">
+.order-preview
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
 
-full-page()
-  height calc(100vh - 50px)
-
-+prefix-classes('send-order__')
-  .main
-    padding 6px
-    z-index 100
-    position absolute
-    top -8px
-    width calc(100% + 6px)
-
-    &.is-mobile
-      padding 6px
-      z-index 100
-      position absolute
-      top -6px
-      width calc(100% + 6px)
-
-    .main-wrap
-      overflow scroll
-      full-page()
-      padding 6px
-
-      .client
-        .client-header
-          background colors.primary
-          color colors.black
-          font-size 1rem
-          font-weight 400
-
-      .address
-        .address-wrap
-          .address-header
-            background colors.primary
-            color colors.black
-            font-size 1rem
-            font-weight 400
-
-      .info
-        .info-header
-          background colors.primary
-          color colors.black
-          font-size 1rem
-          font-weight 400
-
-      .price
-        .price-header
-          background colors.primary
-          color colors.black
-          font-size 1rem
-          font-weight 400
-
-        .price-table
-          .price-final-row
-            background colors.secondary
-
-          .line-through
-            text-decoration line-through
-
-      .top-actions-block
-        font-size 1.4rem
-
-.send-order__info-text
-  .v-list-item
-    padding 0
-
-    .v-icon
-      margin-bottom 2px
-
-.send-order__address-text
-  .v-list-item
-    padding 0
-
-    .v-icon
-      margin-bottom 2px
-
-.send-order__price
-  .v-list-item
-    padding 0
-
-    .v-icon
-      margin-bottom 2px
-
-.text-wrap
-  word-break break-word
+  .order-preview__main
+    padding: 8px
 </style>
