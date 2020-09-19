@@ -8,7 +8,7 @@
         v-btn(icon, @click='value = false')
           v-icon mdi-close
       v-card-text
-        address-field
+        address-field(@selected='closeDialog')
   slot(name='button', :open='openDialog')
 </template>
 
@@ -28,6 +28,10 @@ export default class AddAddressDialog extends Mixins(breakpoints) {
 
   openDialog() {
     this.value = true
+  }
+
+  closeDialog() {
+    this.value = false
   }
 }
 </script>

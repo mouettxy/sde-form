@@ -3,6 +3,7 @@
   v-autocomplete(
     v-model='value',
     @input='onInput',
+    ref='addressInput',
     :loading='isLoading',
     :items='suggestions',
     :search-input.sync='query',
@@ -21,14 +22,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Watch, Ref } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins/'
 import { addressesApi as api } from '@/api'
-import { debounce, map as lodashMap } from 'lodash'
+import { debounce, map as lodashMap, isNull } from 'lodash'
 import { addressesModule } from '@/store'
 
 @Component
 export default class AddressField extends Mixins(colors, breakpoints) {
+  @Ref('addressInput') addressInput: any
   private debounced: any
   public errMsg = ''
   public sucMsg = ''
@@ -40,7 +42,7 @@ export default class AddressField extends Mixins(colors, breakpoints) {
 
   @Watch('query')
   onQueryChange(val: string | null) {
-    if (val !== null) {
+    if (!isNull(val) && val) {
       if (val.length > 3) {
         this.isLoading = 'success'
         this.debounced()
@@ -79,15 +81,17 @@ export default class AddressField extends Mixins(colors, breakpoints) {
   erase(speed = 25) {
     if (this.query) {
       this.query = this.query.substring(0, this.query.length - 1)
-      setTimeout(() => {
-        this.erase(speed)
-      }, speed)
-    } else {
-      this.query = null
-      this.value = {}
-      this.entries = []
-      this.sucMsg = ''
-      this.errMsg = ''
+      if (this.query.length === 0) {
+        this.query = null
+        this.value = {}
+        this.entries = []
+        this.sucMsg = ''
+        this.errMsg = ''
+      } else {
+        setTimeout(() => {
+          this.erase(speed)
+        }, speed)
+      }
     }
   }
 
@@ -101,8 +105,8 @@ export default class AddressField extends Mixins(colors, breakpoints) {
     } as any
 
     if (this.isMobile) {
-      defaultProps.maxHeight = 130
-      defaultProps.top = true
+      defaultProps.maxHeight = 100
+      defaultProps.bottom = true
     }
     return defaultProps
   }
@@ -147,6 +151,7 @@ export default class AddressField extends Mixins(colors, breakpoints) {
     if (status) {
       this.sucMsg = this.$t('addressField.addressAdded') as string
       this.$notification.success(this.$t('addressField.addressAdded') as string)
+      this.$emit('selected')
       setTimeout(() => {
         this.reset()
       }, 1000)
@@ -169,7 +174,7 @@ export default class AddressField extends Mixins(colors, breakpoints) {
   }
 
   mounted() {
-    this.debounced = debounce(this.getSuggestions, 100)
+    this.debounced = debounce(this.getSuggestions, 200)
   }
 }
 </script>
