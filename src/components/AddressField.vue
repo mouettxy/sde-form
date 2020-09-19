@@ -1,194 +1,187 @@
 <template lang="pug">
-.address-search__main
-  v-autocomplete.address__search(
+.address-search
+  v-autocomplete(
     v-model='value',
+    @input='onInput',
+    ref='addressInput',
     :loading='isLoading',
     :items='suggestions',
     :search-input.sync='query',
     :error-messages='errMsg',
-    :prepend-inner-icon='$icons.mapMarker',
-    :append-icon='$icons.search',
     :success-messages='sucMsg',
-    :disabled='disabled',
-    @input='onInput',
-    :color='color',
+    :color='defaultInputColor',
+    prepend-inner-icon='mdi-map-marker',
+    append-icon='mdi-magnify',
     hide-no-data,
     no-filter,
     persistent-hint,
-    hint='Выбранный адрес появится в списке точек маршрута..',
-    label='Укажите адрес',
-    attach='.address-attach-to__wrapper'
+    :menu-props='menuProps()',
+    :hint='$t("addressField.hint")',
+    :label='$t("addressField.label")'
   )
-  .address-attach-to
-    .address-attach-to__wrapper
 </template>
 
-<script>
-import _ from 'lodash'
-import { mapActions } from 'vuex'
-import { colors } from '@/mixins/'
+<script lang="ts">
+import { Component, Mixins, Watch, Ref } from 'vue-property-decorator'
+import { colors, breakpoints } from '@/mixins/'
 import { addressesApi as api } from '@/api'
+import { debounce, map as lodashMap, isNull } from 'lodash'
+import { addressesModule } from '@/store'
 
-export default {
-  name: 'AddressField',
+@Component
+export default class AddressField extends Mixins(colors, breakpoints) {
+  @Ref('addressInput') addressInput: any
+  private debounced: any
+  public errMsg = ''
+  public sucMsg = ''
+  public isLoading: boolean | string = false
 
-  mixins: [colors],
+  public query: string | null = ''
+  public value: any = {}
+  public entries: Array<any> = []
 
-  props: {
-    disabled: Boolean,
-  },
-
-  data: () => ({
-    errMsg: '',
-    sucMsg: '',
-
-    isLoading: false,
-
-    // query
-    query: '',
-    value: {},
-    entries: [],
-  }),
-
-  methods: {
-    ...mapActions(['ADD_ADDRESS']),
-    setError(action, text) {
-      if (action === 'set') {
-        this.errMsg = text
-      } else if (action === 'del') {
+  @Watch('query')
+  onQueryChange(val: string | null) {
+    if (!isNull(val) && val) {
+      if (val.length > 3) {
+        this.isLoading = 'success'
+        this.debounced()
+      } else {
         this.errMsg = ''
       }
-    },
-    setSuccess(action, text) {
-      if (action === 'set') {
-        this.sucMsg = text
-      } else if (action === 'del') {
-        this.sucMsg = ''
+    }
+  }
+
+  get suggestions() {
+    if (!this.entries) {
+      return []
+    }
+
+    const items = lodashMap(this.entries, (entry) => {
+      const information = {
+        address: entry.value,
+        detailedAddress: entry.unrestricted_value,
+        usedGeocoder: false,
+        geocoderResponse: {},
+        suggestion: entry.data,
+        lat: entry.data.geo_lat,
+        lon: entry.data.geo_lon
       }
-    },
-    resetSelect() {
-      this.isLoading = false
-      this.smoothEraseQuery(25)
-    },
-    smoothEraseQuery(speed = 50) {
-      if (this.query) {
-        this.query = this.query.substring(0, this.query.length - 1)
-        setTimeout(() => {
-          this.smoothEraseQuery(speed)
-        }, speed)
-      } else {
+      const address = entry.value
+      const suggestion = {
+        value: information,
+        text: address
+      }
+      return Object.assign({}, suggestion)
+    })
+
+    return items
+  }
+
+  erase(speed = 25) {
+    if (this.query) {
+      this.query = this.query.substring(0, this.query.length - 1)
+      if (this.query.length === 0) {
+        this.query = null
         this.value = {}
         this.entries = []
         this.sucMsg = ''
         this.errMsg = ''
-      }
-    },
-    async onInput() {
-      this.isLoading = true
-
-      if (!this.value.suggestion.house) {
-        this.setError('set', 'Не указан дом.')
-        return
-      }
-
-      if (!this.value.suggestion.geo_lat || !this.value.suggestion.geo_lon) {
-        const response = await api.getLatLon(this.value.detailedAddress)
-
-        if (response) {
-          this.value = {
-            ...this.value,
-            ...response,
-            usedGeocoder: true,
-          }
-        } else {
-          this.resetSelect()
-          this.setError(
-            'set',
-            'Не удалось получить данные по адресу. Попробуйте ещё раз или свяжитесь с администрацией сайта.'
-          )
-        }
-      }
-
-      const address = {
-        ...this.value,
-        isAlias: false,
-        completed: false,
-      }
-
-      this.ADD_ADDRESS(address)
-
-      this.setSuccess('set', 'Адрес успешно добавлен')
-      setTimeout(() => {
-        this.resetSelect()
-      }, 1000)
-    },
-    async getSuggestions() {
-      this.isLoading = true
-      const response = await api.getSuggestions(this.query)
-      if (response) {
-        this.entries = response
       } else {
-        this.setError('set', 'Не удалось получить подсказки, попробуйте переформулировать запрос.')
+        setTimeout(() => {
+          this.erase(speed)
+        }, speed)
       }
-      this.isLoading = false
-    },
-  },
+    }
+  }
 
-  computed: {
-    suggestions() {
-      if (!this.entries) {
-        return []
-      }
-      const items = _(this.entries)
-        .map(entry => {
-          const information = {
-            address: entry.value,
-            detailedAddress: entry.unrestricted_value,
-            usedGeocoder: false,
-            geocoderResponse: {},
-            suggestion: entry.data,
-            lat: entry.data.geo_lat,
-            lon: entry.data.geo_lon,
-          }
-          const address = entry.value
-          const suggestion = {
-            value: information,
-            text: address,
-          }
-          return Object.assign({}, suggestion)
-        })
-        .value()
-      return items
-    },
-  },
+  menuProps() {
+    const defaultProps = {
+      closeOnClick: false,
+      closeOnContentClick: false,
+      disableKeys: true,
+      openOnClick: false,
+      maxHeight: 180
+    } as any
 
-  watch: {
-    query(value) {
-      if (value !== null) {
-        if (value.length > 3) {
-          this.isLoading = 'success'
-          this.debouncedSuggestions()
-        } else {
-          this.setError('del')
+    if (this.isMobile) {
+      defaultProps.maxHeight = 100
+      defaultProps.bottom = true
+    }
+    return defaultProps
+  }
+
+  reset() {
+    this.isLoading = false
+    this.erase()
+  }
+
+  async onInput() {
+    this.isLoading = 'warning'
+
+    if (!this.value.suggestion.house) {
+      this.errMsg = this.$t('addressField.errorAddressWithoutHome') as string
+      this.$notification.error(this.$t('addressField.errorAddressWithoutHome') as string)
+      return
+    }
+
+    if (!this.value.suggestion.geo_lat || !this.value.suggestion.geo_lon) {
+      const response = await api.getLatLon(this.value.detailedAddress)
+
+      if (response) {
+        this.value = {
+          ...this.value,
+          ...response
         }
+      } else {
+        this.reset()
+        this.errMsg = this.$t('addressField.errorCannotGeocodeAddress') as string
+        this.$notification.error(this.$t('addressField.errorCannotGeocodeAddress') as string)
       }
-    },
-  },
+    }
 
-  created() {
-    this.debouncedSuggestions = _.debounce(this.getSuggestions, 350)
-  },
+    const address = {
+      ...this.value,
+      isAlias: false,
+      completed: false
+    }
+
+    const status = await addressesModule.add(address)
+
+    if (status) {
+      this.sucMsg = this.$t('addressField.addressAdded') as string
+      this.$notification.success(this.$t('addressField.addressAdded') as string)
+      this.$emit('selected')
+      setTimeout(() => {
+        this.reset()
+      }, 1000)
+    } else {
+      this.errMsg = this.$t('addressField.errorAddressAdd') as string
+      this.$notification.error(this.$t('addressField.errorAddressAdd') as string)
+    }
+  }
+
+  async getSuggestions() {
+    this.isLoading = true
+    const response = await api.getSuggestions(this.query as string)
+    if (response) {
+      this.entries = response
+    } else {
+      this.errMsg = this.$t('addressField.errorOnSuggestionsFetch') as string
+      this.$notification.error(this.$t('addressField.errorOnSuggestionsFetch') as string)
+    }
+    this.isLoading = false
+  }
+
+  mounted() {
+    this.debounced = debounce(this.getSuggestions, 200)
+  }
 }
 </script>
 
-<style lang="stylus">
-.address__search .notranslate
-  transform none !important
-
-.address-attach-to
-  position relative
-
-  .address-attach-to__wrapper
-    top -65px
-    position absolute
+<style lang="sass">
+.address-search
+  padding: 12px
+  .notranslate
+    transform: none !important
 </style>

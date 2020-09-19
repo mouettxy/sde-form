@@ -48,59 +48,59 @@ export default {
   name: 'v-datetime-picker',
   model: {
     prop: 'datetime',
-    event: 'input',
+    event: 'input'
   },
   props: {
     datetime: {
       type: [Date, String],
-      default: null,
+      default: null
     },
     disabled: {
-      type: Boolean,
+      type: Boolean
     },
     loading: {
-      type: Boolean,
+      type: Boolean
     },
     label: {
       type: String,
-      default: '',
+      default: ''
     },
     dialogWidth: {
       type: Number,
-      default: DEFAULT_DIALOG_WIDTH,
+      default: DEFAULT_DIALOG_WIDTH
     },
     dateFormat: {
       type: String,
-      default: DEFAULT_DATE_FORMAT,
+      default: DEFAULT_DATE_FORMAT
     },
     timeFormat: {
       type: String,
-      default: 'HH:mm',
+      default: 'HH:mm'
     },
     clearText: {
       type: String,
-      default: DEFAULT_CLEAR_TEXT,
+      default: DEFAULT_CLEAR_TEXT
     },
     okText: {
       type: String,
-      default: DEFAULT_OK_TEXT,
+      default: DEFAULT_OK_TEXT
     },
     textFieldProps: {
-      type: Object,
+      type: Object
     },
     datePickerProps: {
-      type: Object,
+      type: Object
     },
     timePickerProps: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
       display: false,
       activeTab: 0,
       date: DEFAULT_DATE,
-      time: DEFAULT_TIME,
+      time: DEFAULT_TIME
     }
   },
   mounted() {
@@ -129,7 +129,7 @@ export default {
     },
     dateSelected() {
       return !this.date
-    },
+    }
   },
   methods: {
     init() {
@@ -165,12 +165,12 @@ export default {
     },
     showTimePicker() {
       this.activeTab = 1
-    },
+    }
   },
   watch: {
     datetime: function() {
       this.init()
-    },
-  },
+    }
+  }
 }
 </script>
