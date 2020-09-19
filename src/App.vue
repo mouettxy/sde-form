@@ -104,7 +104,7 @@ v-app
       v-icon(:color='isDark ? "success" : "dark"') mdi-invert-colors
     v-btn#tour-footer-lang.text-uppercase(text, @click='changeLocale', :content='$t("changeLocaleTip")', v-tippy) {{$i18n.locale}}
     v-spacer
-    span {{ new Date().getFullYear() }} - sde
+    span {{ new Date().getFullYear() }} sde
 </template>
 
 <script lang="ts">
