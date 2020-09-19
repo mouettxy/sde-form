@@ -7,9 +7,22 @@ import {
   OrderRoute,
   OrderRoute as Route
 } from '@/typings/order'
-import { filter as lodashFilter, isUndefined, each as lodashEach, isNull, each, findLastIndex } from 'lodash'
+import {
+  filter as lodashFilter,
+  isUndefined,
+  each as lodashEach,
+  isNull,
+  each,
+  findLastIndex,
+  cloneDeep,
+  map
+} from 'lodash'
 import { authModule } from '.'
-import { formatPhoneNumber } from '@/helpers'
+import { formatData, formatPhoneNumber } from '@/helpers'
+import { sendOrder as apiSendOrder, saveOrder as apiSaveOrder } from '@/api'
+import { User } from './auth'
+import Vue from 'vue'
+import i18n from '@/i18n'
 
 @Module({
   name: 'addresses',
@@ -31,6 +44,14 @@ export default class Addresses extends VuexModule {
 
   get addressList() {
     return this.addresses
+  }
+
+  @Mutation
+  RESET_STATE() {
+    this.addresses = []
+    this.information = null
+    this.prices = null
+    this.routes = null
   }
 
   @Mutation
@@ -157,8 +178,42 @@ export default class Addresses extends VuexModule {
   }
 
   @Action
-  reset() {
-    //
+  async reset(notRestoreUserFields?: boolean) {
+    this.context.commit('RESET_STATE')
+
+    if (!notRestoreUserFields) {
+      if (await authModule.relog({ type: 'default', id: Vue.prototype.$cookies.get('remembered-id') })) {
+        if (Vue.prototype.$cookies.get('fill-default-address') && Vue.prototype.$cookies.get('remembered-id')) {
+          if (this.addresses.length <= 0) {
+            const defaultAddress = lodashFilter(authModule.aliases, { name: 'От нас / К нам' })[0] as Address
+            this.context.dispatch('add', defaultAddress)
+          }
+        }
+
+        if (authModule.user) {
+          const user = authModule.user
+          if (typeof user !== 'string') {
+            if (user.payment_who) {
+              this.context.commit('UPDATE_INFO', {
+                whoPays: user.payment_who,
+                car: false,
+                comment: '',
+                quick: false
+              })
+            }
+          }
+        }
+      }
+    }
+
+    if (isNull(this.information)) {
+      this.context.commit('UPDATE_INFO', {
+        whoPays: 'Заказчик',
+        car: false,
+        comment: '',
+        quick: false
+      })
+    }
   }
 
   @Action
@@ -200,5 +255,77 @@ export default class Addresses extends VuexModule {
   async setPrices(payload: Prices) {
     this.context.commit('UPDATE_PRICES', payload)
     return Promise.resolve(true)
+  }
+
+  @Action
+  async saveOrder(payload: string): Promise<{ status: string; message: string }> {
+    try {
+      const parsed = formatData(authModule.user, this.addresses, this.information, this.routes, this.prices)
+      const state = {
+        name: payload,
+        addressList: map(this.addresses, (e) => {
+          if (e.name) {
+            return {
+              address: e.address,
+              fields: e.fields,
+              isAlias: e.isAlias,
+              id: e.id,
+              lat: e.lat,
+              lon: e.lon,
+              name: e.name
+            }
+          } else {
+            return {
+              address: e.address,
+              fields: e.fields,
+              isAlias: e.isAlias,
+              id: e.id,
+              lat: e.lat,
+              lon: e.lon
+            }
+          }
+        }),
+        addressInfo: cloneDeep(this.information),
+        route: cloneDeep(this.routes)
+      }
+
+      const response = await apiSaveOrder(state, (authModule.user as User).CLIENT)
+
+      if (response) {
+        const send = await apiSendOrder(parsed.raw, parsed.processed, parsed.modern)
+        await this.context.dispatch('reset')
+        return Promise.resolve({
+          status: 'OK-SAVED',
+          message: `${i18n.t('notifications.orderSuccessSaveSent')} ${send}`
+        })
+      } else {
+        return Promise.resolve({ status: 'ERROR-SAVED', message: i18n.t('notifications.orderErrorSave') as string })
+      }
+    } catch (e) {
+      return Promise.resolve({ status: 'ERROR-SAVED', message: i18n.t('notifications.orderErrorData') as string })
+    }
+  }
+
+  @Action
+  async sendOrder(): Promise<{ status: string; message: string }> {
+    try {
+      const parsed = formatData(authModule.user, this.addresses, this.information, this.routes, this.prices)
+      try {
+        const response = await apiSendOrder(parsed.raw, parsed.processed, parsed.modern)
+        if (response) {
+          this.context.dispatch('reset')
+          return Promise.resolve({
+            status: 'OK',
+            message: `${i18n.t('notifications.orderSuccessSent')} ${response}`
+          })
+        } else {
+          return Promise.resolve({ status: 'ERROR', message: i18n.t('notifications.orderErrorServer') as string })
+        }
+      } catch (e) {
+        return Promise.resolve({ status: 'ERROR', message: i18n.t('notifications.orderErrorServer') as string })
+      }
+    } catch (e) {
+      return Promise.resolve({ status: 'ERROR', message: i18n.t('notifications.orderErrorData') as string })
+    }
   }
 }
