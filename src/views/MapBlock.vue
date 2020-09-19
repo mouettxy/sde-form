@@ -142,7 +142,9 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
   }
   get DirectionsRenderer() {
     const a = new this.google.maps.DirectionsRenderer()
-    a.setMap(this.map.$mapObject)
+    if (this.map?.$mapObject) {
+      a.setMap(this.map.$mapObject)
+    }
     return a
   }
 
@@ -171,7 +173,6 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
     }
 
     if (origin && destination) {
-      //@ts-ignore
       this.DirectionsService.route(
         {
           origin,
@@ -191,7 +192,6 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
     if (addressesCount >= 2 && !isUndefined(addressesModule.addresses)) {
       this.getRoute(addressesModule.addresses, (response: any, status: any) => {
         if (status === 'OK' && response) {
-          //@ts-ignore
           this.DirectionsRenderer.setDirections(response)
 
           // making route info object
@@ -244,7 +244,8 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
         this.lng = pos.coords.longitude
       },
       (err) => {
-        console.debug(err.message)
+        //console.debug(err.message)
+        return false
       },
       {
         enableHighAccuracy: true,
