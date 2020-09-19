@@ -29,7 +29,7 @@ import { authModule } from '@/store'
 import { includes, map } from 'lodash'
 
 @Component({})
-export default class AddAddressDialog extends Mixins(breakpoints, colors) {
+export default class AddAliasDialog extends Mixins(breakpoints, colors) {
   @Prop(Object) alias: any
   public value = false
   public aliasName = ''
