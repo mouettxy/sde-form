@@ -11,7 +11,11 @@ bHzvjazHbvkgi5EteQIDAQAB
 -----END PUBLIC KEY-----`
 
 export const getClient = async (id: number | string) => {
-  return await http.get(endpoints.client(id).get)
+  if (id) {
+    return await http.get(endpoints.client(id).get)
+  } else {
+    return { data: false, status: 500 }
+  }
 }
 
 export const getAliases = async (id: number) => {
@@ -99,7 +103,6 @@ export const sendOrder = async (raw: any, processed: any, modern: any) => {
 
     return response.data
   } catch (e) {
-    console.debug(e)
     return false
   }
 }
@@ -114,7 +117,6 @@ export const saveOrder = async (state: any, id: number | string) => {
 
     return response.data
   } catch (e) {
-    console.debug(e)
     return false
   }
 }
