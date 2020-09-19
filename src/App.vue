@@ -94,7 +94,7 @@ v-app
   v-footer.px-2(padless, fixed, app, :color='defaultFooterColor')
     v-btn(
       icon,
-      :disabled='!isRememberedUser()',
+      :disabled='!(user && typeof user !== "string")',
       @click='defaultStartOrder',
       :content='$t("homeMapMarkerTip")',
       v-tippy
@@ -228,6 +228,10 @@ export default class App extends Mixins(colors, breakpoints) {
     } else {
       this.activeTab = 1
     }
+  }
+
+  get user() {
+    return authModule.user
   }
 
   get pricesOverall() {
@@ -432,6 +436,10 @@ body
 .v-tour__target--highlighted
   box-shadow: none !important
   border: 2px solid var(--v-primary-base)
+
+.tippy-popper
+  font-family: 'Roboto' !important
+  font-size: 1.1rem !important
 
 .v-step__arrow
   border-bottom-color: var(--v-info-darken1) !important
