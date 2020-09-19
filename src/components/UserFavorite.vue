@@ -10,8 +10,8 @@ v-scroll-y-transition
       show-arrows,
       grow
     )
-      v-tab(v-if='aliases') {{ $t("addresses") }}
-      v-tab(v-if='addresses') {{ $t("orders") }}
+      v-tab(v-if='aliases')#tour-aliases {{ $t("addresses") }}
+      v-tab(v-if='addresses')#tour-addresses {{ $t("orders") }}
       v-tab-item.saved-data__addresses.pa-8(v-if='aliases')
         user-favorite-aliases(:aliases='aliases')
       v-tab-item.pa-8(v-if='addresses')

@@ -7,6 +7,7 @@ import './plugins/map'
 import './plugins/notifications'
 import './plugins/tippy'
 import './plugins/mask'
+import './plugins/tour'
 
 import vuetify from './plugins/vuetify'
 

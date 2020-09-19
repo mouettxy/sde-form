@@ -1,14 +1,17 @@
 <template lang="pug">
-v-card.elevation-3.address-picker(v-if='addressList.length > 0')
-  add-address-dialog
-    template(#button='{open}')
-      .add-address
-        v-btn(@click='open', :color='defaultAddAddressColor', text)
-          v-icon(left, :color='defaultAddAddressColor') mdi-plus
-          | {{ $t("addressField.btn") }}
+v-card.elevation-3.address-picker(v-if='user')
+  v-slide-y-transition
+    .address-picer__first-address(v-if='addressList.length === 0')
+      h4.my-4.text-center {{ $t("seemsEmpty") }}
 
-  draggable.address-list.py-8(v-model='addressList', @start='drag = true', @end='drag = false', v-bind='dragOptions')
-    transition-group(type='transition', :name='!drag ? "list" : null')
+  draggable.address-list.py-8(
+    v-if='addressList.length > 0',
+    v-model='addressList',
+    @start='drag = true',
+    @end='drag = false',
+    v-bind='dragOptions'
+  )
+    transition-group(type='transition', :name='!drag ? "slide-fade" : null')
       .address.elevation-1(v-for='address in addressList', :key='address.id')
         keep-alive
           address-fields(:address='address')
@@ -26,29 +29,31 @@ v-card.elevation-3.address-picker(v-if='addressList.length > 0')
                     | {{$t("addressFields.removeBtn")}}
             template(#default='{on, show}')
               template(v-if='isMobile')
-                v-row.buttons-row
-                  v-col
-                    .address-move
-                      v-btn(icon)
-                        v-icon mdi-cursor-move
-                  v-col
-                    v-btn.address-settings-btn(@click='on', icon)
-                      template(v-if='show')
-                        v-icon mdi-close
-                      template(v-else)
-                        v-icon mdi-cog
-                v-row.address-name-row
-                  span.address-name {{address.address}}
+                span.address-header__buttons
+                  v-btn#tour-address-move.address-move(icon, small)
+                    v-icon mdi-cursor-move
+                  v-btn#tour-address-settings.address-settings-btn(@click='on', icon, small)
+                    template(v-if='show')
+                      v-icon mdi-close
+                    template(v-else)
+                      v-icon mdi-cog
+                span {{address.address}}
               template(v-else)
                 .address-move
-                  v-btn(icon)
+                  v-btn(icon)#tour-address-move
                     v-icon mdi-cursor-move
                 span.address-name {{address.address}}
-                v-btn.address-settings-btn(@click='on', icon)
+                v-btn#tour-address-settings.address-settings-btn(@click='on', icon)
                   template(v-if='show')
                     v-icon mdi-close
                   template(v-else)
                     v-icon mdi-cog
+  add-address-dialog
+    template(#button='{open}')
+      #tour-add-address.add-address
+        v-btn(@click='open', :color='defaultAddAddressColor', text)
+          v-icon(left, :color='defaultAddAddressColor') mdi-plus
+          | {{ $t("addressField.btn") }}
 </template>
 
 <script lang="ts">
@@ -60,7 +65,7 @@ import AddAddressDialog from '@/components/dialogs/AddAddressDialog.vue'
 import AddressFields from '@/components/AddressFields.vue'
 import draggable from 'vuedraggable'
 
-import { addressesModule } from '@/store'
+import { addressesModule, authModule } from '@/store'
 
 @Component({
   components: {
@@ -91,10 +96,25 @@ export default class AddressPicker extends Mixins(breakpoints, colors) {
   set addressList(val) {
     addressesModule.updateList(val)
   }
+
+  get user() {
+    return authModule.user
+  }
 }
 </script>
 
 <style lang="sass">
+.slide-fade-enter-active
+  transition: all .3s ease
+
+.slide-fade-leave-active
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0)
+
+.slide-fade-enter, .slide-fade-leave-to
+  transform: translateX(10px)
+  opacity: 0
+
+
 .address-picker
   margin-top: 12px
   padding: 12px
@@ -114,13 +134,15 @@ export default class AddressPicker extends Mixins(breakpoints, colors) {
           align-content: center
 
         &.mobile
-          .address-name-row
-            margin-left: 0
-            margin-right: 0
-            text-align: center
-            padding: 12px
-          .buttons-row
-            text-align: center
+          display: flex
+          flex-direction: row
+          align-items: center
+
+          .address-header__buttons
+            display: flex
+            flex-direction: column
+            padding: 2px
+            margin-right: 8px
 
     &:first-child
       margin-top: 0

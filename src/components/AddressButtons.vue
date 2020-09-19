@@ -2,16 +2,24 @@
 v-slide-y-transition
   .address-buttons
     template(v-if='pricesOverall')
-      v-btn(color='primary', block) Предпросмотр заявки
-      v-btn(color='primary', block) Вызвать экспедитора
-      v-btn(color='primary', block) Сохранить заявку
+      v-btn(color='primary', block, @click='$emit("preview")', :disabled='inTour()')#tour-preview-btn {{ $t("orderButtons.preview") }}
+      v-btn(color='primary', block, @click='sendOrder', :disabled='inTour()')#tour-send-btn {{ $t("orderButtons.send") }}
+      add-order-dialog
+        template(#buttons='{open}')
+          v-btn(color='primary', block, @click='open', :disabled='inTour()')#tour-save-btn {{ $t("orderButtons.save") }}
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
+import AddOrderDialog from '@/components/dialogs/AddOrderDialog.vue'
+
 import { addressesModule } from '@/store'
-@Component
+@Component({
+  components: {
+    AddOrderDialog
+  }
+})
 export default class AddressButtons extends Vue {
   get pricesOverall() {
     if (addressesModule.prices) {
@@ -19,6 +27,29 @@ export default class AddressButtons extends Vue {
     }
 
     return false
+  }
+
+  inTour() {
+    return !!document.querySelector('.v-tour__target--highlighted')
+  }
+
+  async sendOrder() {
+    const response = await addressesModule.sendOrder()
+
+    switch (response.status) {
+      case 'ERROR':
+        this.$notification.error(response.message)
+        break
+      case 'ERROR-SAVED':
+        this.$notification.error(response.message)
+        break
+      case 'OK':
+        this.$notification.success(response.message)
+        break
+      case 'OK-SAVED':
+        this.$notification.success(response.message)
+        break
+    }
   }
 }
 </script>

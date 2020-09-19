@@ -15,6 +15,7 @@
   "logoutButtonTip": "Logout",
   "addresses": "Addresses",
   "orders": "Orders",
+  "seemsEmpty": "Seems order doesent have any addresses yet...",
 
   "title": "Delivery request",
 
@@ -116,5 +117,26 @@
     "discount": "Customer discount",
     "total": "Total",
     "discounted": "With discount"
+  },
+
+  "notifications": {
+    "orderSuccessSent": "Order has been successfully sent. Order ID:",
+    "orderSuccessSaveSent": "Order has been successfully saved and sent. Order ID:",
+    "orderErrorSave": "An error occurred while saving order. Check the correctness of the entered data. The order was not sent.",
+    "orderErrorData": "An error occurred while forming order. Check the correctness of the entered data. Order was not sent.",
+    "orderErrorServer": "Server error. Try again later ..."
+  },
+
+  "orderButtons": {
+    "preview": "Preview order",
+    "send": "Send order",
+    "save": "Save order"
+  },
+
+  "tour": {
+    "btnSkip": "Skip",
+    "btnPrevious": "Previous",
+    "btnNext": "Next",
+    "btnStop": "Stop"
   }
 }

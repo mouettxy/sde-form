@@ -1,36 +1,35 @@
 <template lang="pug">
 v-card.elevation-3.auth__field
-  v-scroll-y-transition
-    v-text-field(
-      :class='{"password": showPassword}',
-      v-if='!isLoggedIn',
-      prepend-inner-icon='mdi-account',
-      :loading='isLoading',
-      :success-messages='sucMsg',
-      :error-messages='errMsg',
-      v-model='login',
-      :color='defaultInputColor',
-      persistent-hint,
-      autocomplete='sde_login_form_hsvv',
-      :hint='$t("loginHint")',
-      :label='$t("loginLabel")'
-    )
-  v-scroll-y-transition
-    v-text-field(
-      v-if='showPassword',
-      prepend-inner-icon='mdi-lock',
-      append-icon='mdi-login',
-      @click:append='auth',
-      type='password',
-      v-model='password',
-      :color='defaultInputColor',
-      persistent-hint,
-      autocomplete='sde_password_form_mxxt',
-      :hint='$t("passwordHint")',
-      :label='$t("passwordLabel")'
-    )
-  v-scroll-y-transition
-    v-switch(v-show='showPassword', v-model='needRemember', :label='$t("rememberMeLabel")')
+  v-form
+    v-scroll-y-transition
+      v-text-field(
+        :class='{"password": showPassword}',
+        v-if='!isLoggedIn',
+        prepend-inner-icon='mdi-account',
+        :loading='isLoading',
+        :success-messages='sucMsg',
+        :error-messages='errMsg',
+        v-model='login',
+        :color='defaultInputColor',
+        persistent-hint,
+        autocomplete='sde_login_form_hsvv',
+        :hint='$t("loginHint")',
+        :label='$t("loginLabel")'
+      )
+    v-scroll-y-transition
+      v-text-field.pb-4(
+        v-if='showPassword',
+        prepend-inner-icon='mdi-lock',
+        append-icon='mdi-login',
+        @click:append='auth',
+        type='password',
+        v-model='password',
+        :color='defaultInputColor',
+        persistent-hint,
+        autocomplete='sde_password_form_mxxt',
+        :hint='$t("passwordHint")',
+        :label='$t("passwordLabel")'
+      )
   v-slide-y-transition
     template(v-if='isLoggedIn')
       v-list(v-if='user')
@@ -43,6 +42,15 @@ v-card.elevation-3.auth__field
           v-list-item-action
             v-btn(icon, @click='logout', :content='$t("logoutButtonTip")', v-tippy)
               v-icon mdi-close
+  v-slide-y-transition
+    template(v-if='isLoggedIn')
+      base-alert(unique-id='tourNotification')
+        v-row
+          v-col
+            .text-subtitle-1 Быстрый тур по новой форме. Мы покажем и расскажем как тут всё теперь работает!
+        v-row
+          v-col
+            v-btn(color='info', @click='getTour') Хочу узнать!
 </template>
 
 <script lang="ts">
@@ -51,7 +59,13 @@ import { colors } from '@/mixins'
 import { authModule, addressesModule } from '@/store'
 import { debounce } from 'lodash'
 
-@Component
+import BaseAlert from '@/components/BaseAlert.vue'
+
+@Component({
+  components: {
+    BaseAlert
+  }
+})
 export default class ClientField extends Mixins(colors) {
   private debounced?: any
 
@@ -87,6 +101,10 @@ export default class ClientField extends Mixins(colors) {
     }
   }
 
+  getTour() {
+    this.$tours['userGuideline'].start()
+  }
+
   async logout() {
     this.sucMsg = ''
     this.errMsg = ''
@@ -101,8 +119,7 @@ export default class ClientField extends Mixins(colors) {
     const response = await authModule.login({
       type: 'default',
       login: this.login,
-      password: this.password,
-      needRemember: this.needRemember
+      password: this.password
     })
 
     if (response.type === 'error') {

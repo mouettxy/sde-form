@@ -35,6 +35,7 @@
     "vue-i18n": "^8.17.3",
     "vue-property-decorator": "^8.5.1",
     "vue-tippy": "^4.7.0",
+    "vue-tour": "^1.5.0",
     "vuedraggable": "^2.24.0",
     "vuetify": "^2.2.11",
     "vuex": "^3.5.1",

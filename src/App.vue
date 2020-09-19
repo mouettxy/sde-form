@@ -4,7 +4,7 @@ v-app
     v-app-bar-nav-icon(@click.stop='menu = true')
     v-toolbar-title {{ $t("title") }}
     v-spacer
-    v-btn.text-lowercase(text, color='primary', href='https://sde.ru.com', target='_blank') sde
+    v-btn.text-lowercase.toolbar-logo(large, text, color='primary', href='https://sde.ru.com', target='_blank') sde
 
   v-navigation-drawer(v-model='menu', absolute, temporary).menu
     v-list(dense).menu-links
@@ -28,6 +28,44 @@ v-app
     v-scale-transition
       PriceLabel
 
+  v-tour(name='userGuideline', :steps='tourSteps', :options='tourOptions', :callbacks='tourCallbacks')
+    template(slot-scope='tour')
+      v-step.blue.darken-2(
+        v-for='(step, index) of tour.steps',
+        v-if='tour.currentStep === index',
+        :key='index',
+        :step='step',
+        :previous-step='tour.previousStep',
+        :next-step='tour.nextStep',
+        :stop='tour.stop',
+        :skip='tour.skip',
+        :is-first='tour.isFirst',
+        :is-last='tour.isLast',
+        :labels='tour.labels',
+        :highlight='tour.highlight'
+      )
+        div(slot='header')
+          v-toolbar.white--text.blue.darken-1
+            v-spacer
+            v-toolbar-title {{step.header.title}}
+            v-spacer
+        div(slot='content')
+          v-card.text-center
+            .text.pa-3(v-html='step.content')
+            v-card-actions
+              v-row
+                v-col
+                  template(v-if='!tour.isFirst')
+                    v-btn.blue.lighten-1(@click='tour.previousStep', block, small) {{tour.labels.buttonPrevious}}
+                  template(v-else)
+                    v-spacer
+                v-col
+                  template(v-if='!tour.isLast')
+                    v-btn.blue.lighten-1(@click='tour.nextStep', block, small) {{tour.labels.buttonNext}}
+                  template(v-else)
+                    v-spacer
+        div(slot='actions')
+          v-btn.blue.lighten-2(block, @click='tour.skip') {{tour.labels.buttonStop}}
   v-main
     v-container.sde-form(fluid)
       v-row.sde-row(no-gutters)
@@ -43,6 +81,7 @@ v-app
           )
             v-tab {{ $t("makeOrder") }}
             v-tab(v-if='isMobile') {{ $t("map") }}
+          v-tabs-items(v-model='activeTab', touchless)
             v-tab-item
               order-view(:state='state', @state-change='onStateChange')
             v-tab-item(v-if='isMobile')
@@ -53,19 +92,19 @@ v-app
             map-block
 
   v-footer.px-2(padless, fixed, app, :color='defaultFooterColor')
-    span {{ new Date().getFullYear() }} - sde
-    v-spacer
     v-btn(
       icon,
-      :disabled='!$cookies.get("remembered-id")',
+      :disabled='!isRememberedUser()',
       @click='defaultStartOrder',
       :content='$t("homeMapMarkerTip")',
       v-tippy
-    )
+    )#tour-footer-home
       v-icon(:color='$cookies.get("fill-default-address") ? "success" : "dark"') mdi-home-map-marker
-    v-btn(icon, @click='changeTheme', :content='$t("invertColorsTip")', v-tippy)
+    v-btn(icon, @click='changeTheme', :content='$t("invertColorsTip")', v-tippy)#tour-footer-theme
       v-icon(:color='isDark ? "success" : "dark"') mdi-invert-colors
-    v-btn.text-uppercase(text, @click='changeLocale', :content='$t("changeLocaleTip")', v-tippy) {{$i18n.locale}}
+    v-btn#tour-footer-lang.text-uppercase(text, @click='changeLocale', :content='$t("changeLocaleTip")', v-tippy) {{$i18n.locale}}
+    v-spacer
+    span {{ new Date().getFullYear() }} - sde
 </template>
 
 <script lang="ts">
@@ -94,6 +133,93 @@ export default class App extends Mixins(colors, breakpoints) {
   public menu = false
   public state = 'filling'
   public activeTab = 1
+  public tourSteps = [
+    {
+      target: '#tour-footer-home',
+      header: { title: 'Базовые настройки' },
+      content: 'Нажмите, и адрес "От нас" будет всегда выставляться из вашего аккаунта.'
+    },
+    {
+      target: '#tour-footer-theme',
+      header: { title: 'Базовые настройки' },
+      content: 'Смените тему, иногда это может быть удобно!'
+    },
+    {
+      target: '#tour-footer-lang',
+      header: { title: 'Базовые настройки' },
+      content: 'Смена языка / Change language.'
+    },
+    {
+      target: '#tour-aliases',
+      header: {
+        title: 'Заполняйте быстрее!'
+      },
+      content: 'Удобный поиск по вашим сохранённым адресам.',
+      params: {
+        enableScrolling: false,
+        placement: 'bottom'
+      }
+    },
+    {
+      target: '#tour-addresses',
+      header: {
+        title: 'Заполняйте быстрее!'
+      },
+      content: 'Удобный поиск по вашим сохранённым заявкам.',
+      params: {
+        enableScrolling: false,
+        placement: 'bottom'
+      }
+    },
+    {
+      target: '#tour-add-address',
+      header: {
+        title: 'Добавление адресов'
+      },
+      params: {
+        enableScrolling: true,
+        placement: 'top'
+      },
+      content:
+        'Добавьте адрес во всплывающем окне. Во время тура мы добавили два адреса за вас. Они будут удалены когда вы закроете тур.'
+    },
+    {
+      target: '#tour-address-move',
+      header: {
+        title: 'Работа с адресами'
+      },
+      content: 'Изменяйте порядок адресов просто передвигая их!'
+    },
+    {
+      target: '#tour-address-settings',
+      header: {
+        title: 'Работа с адресами'
+      },
+      content: 'Привычные вам поля адреса скрыты по умолчанию. Вы можете открыть или закрыть их по этой кнопке.'
+    },
+    {
+      target: '#tour-preview-btn',
+      header: {
+        title: 'Проверьте правильность'
+      },
+      content: 'В предпросмотре вы можете увидеть все заполненные поля и цены. Проверьте всё ли вы заполнили верно!'
+    },
+    {
+      target: '#tour-send-btn',
+      header: {
+        title: 'Отправьте заявку'
+      },
+      content: 'Всё правильно? Отправляйте заявку! Наши экспедиторы доставят всё точно в срок.'
+    },
+    {
+      target: '#tour-save-btn',
+      header: {
+        title: 'Сохраните заявку'
+      },
+      content:
+        'Хотите не только отправить, но и сохранить заявку для дальнейшего использования? Просто дайте ей имя во всплывающем окне, и мы сохраним её в вашем аккаунте.'
+    }
+  ]
 
   @Watch('breakpoints')
   onBreakpointsChange() {
@@ -106,6 +232,92 @@ export default class App extends Mixins(colors, breakpoints) {
 
   get pricesOverall() {
     return addressesModule.prices?.overall
+  }
+
+  get tourOptions() {
+    return {
+      highlight: true,
+      labels: {
+        buttonSkip: this.$t('tour.btnSkip'),
+        buttonPrevious: this.$t('tour.btnPrevious'),
+        buttonNext: this.$t('tour.btnNext'),
+        buttonStop: this.$t('tour.btnStop')
+      }
+    }
+  }
+
+  get tourCallbacks() {
+    return {
+      onNextStep: (curStep: number) => {
+        if (curStep === 4) {
+          addressesModule.addOrder({
+            name: 'т 1',
+            route: {
+              routes: [
+                {
+                  to: 'ул. Гаврилова П.М., 102, Краснодар, Краснодарский край, Россия, 350020',
+                  from: 'ул. имени Артюшкова, 15, Краснодар, Краснодарский край, Россия, 350016',
+                  time: 8,
+                  distance: 3.8,
+                  timeString: '8 м.'
+                }
+              ],
+              overallTime: 8,
+              overallDistance: 3.8,
+              overallTimeString: '8 м.'
+            },
+            addressInfo: {
+              car: false,
+              quick: false,
+              comment: 'Заявка из тура по форме.',
+              whoPays: 'Заказчик'
+            },
+            addressList: [
+              {
+                id: 1,
+                lat: '45.0675184',
+                lon: '39.0143587',
+                name: 'От нас / К нам',
+                fields: {
+                  bus: false,
+                  buyin: 0,
+                  phone: '+7 (905) 627-75-08',
+                  buyout: 0,
+                  takeIn: false,
+                  bundles: 0,
+                  comment: 'Главный офис SDE',
+                  takeOut: true,
+                  datetime: '18.09.2020 14:53'
+                },
+                address: 'г Краснодар, ул им. Артюшкова В.Д., д 15',
+                isAlias: true
+              },
+              {
+                id: 2,
+                lat: '45.0534018',
+                lon: '38.9847118',
+                fields: {
+                  bus: false,
+                  buyin: 0,
+                  phone: '',
+                  buyout: 0,
+                  takeIn: true,
+                  bundles: 0,
+                  comment: '',
+                  takeOut: false,
+                  datetime: '18.09.2020 15:28'
+                },
+                address: 'г Краснодар, ул им. Гаврилова П.М., д 100',
+                isAlias: false
+              }
+            ]
+          })
+        }
+      },
+      onSkip: () => {
+        addressesModule.reset()
+      }
+    }
   }
 
   onStateChange(state: string) {
@@ -161,6 +373,10 @@ export default class App extends Mixins(colors, breakpoints) {
       await authModule.relog({ type: 'default', id: isRememeredUser })
     }
 
+    if (!isRememeredUser && this.$cookies.get('fill-default-address')) {
+      this.$cookies.remove('fill-default-address')
+    }
+
     if (this.$cookies.get('fill-default-address')) {
       if (addressesModule.addressList.length <= 0) {
         const defaultAddress = lodashFilter(authModule.aliases, { name: 'От нас / К нам' })[0] as OrderAddress
@@ -177,14 +393,17 @@ export default class App extends Mixins(colors, breakpoints) {
       this.activeTab = 0
     }
 
+    eventBus.$on('change-order-view', (val: string) => {
+      this.state = val
+    })
     eventBus.$on('order-sended-saved', () => {
-      this.state = 'filling'
+      this.state = 'order'
     })
     eventBus.$on('order-sended', () => {
-      this.state = 'filling'
+      this.state = 'order'
     })
     eventBus.$on('order-sended-error', () => {
-      this.state = 'filling'
+      this.state = 'order'
     })
     eventBus.$on('address-added', (payload: any) => {
       if (payload.name !== 'От нас / К нам' && !payload.isAlias) {
@@ -206,6 +425,19 @@ body
   overflow: hidden
   min-height: 100%
   width: 100%
+
+.notificationCenter
+  z-index: 999999 !important
+
+.v-tour__target--highlighted
+  box-shadow: none !important
+  border: 2px solid var(--v-primary-base)
+
+.v-step__arrow
+  border-bottom-color: var(--v-info-darken1) !important
+
+.toolbar-logo
+  font-size: 1.2rem !important
 
 ::-webkit-scrollbar
   width: 4px
