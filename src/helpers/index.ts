@@ -1,6 +1,6 @@
 import { User } from '@/store/auth'
 import { OrderAddress, OrderInformation, OrderPrices, OrderRoute } from '@/typings/order'
-import { chain, compact, each, isNull, join, last, map, reduce, size } from 'lodash'
+import { chain, compact, each, isNull, isUndefined, join, last, map, reduce, size } from 'lodash'
 import moment from 'moment'
 
 export const formatPhoneNumber = (str: string) => {
@@ -117,8 +117,9 @@ export const formatData = (
     return { strings, type }
   }
 
-  const rawTagEval = (key: any, exp: any) => {
-    const id: number | undefined = last(key) === 'a' ? 0 : last(key)
+  const rawTagEval = (key: string, exp: { strings: Array<string>; type: string }) => {
+    // first key is always be "otkuda" key
+    const id: number | undefined = last(key) === 'a' ? 0 : Number(last(key))
     if (typeof id !== 'number') {
       return ''
     }
@@ -131,19 +132,16 @@ export const formatData = (
     if (exp.type === 'id') {
       if (exp.strings[0] === 'fields') {
         if (exp.strings[1] === 'phone') {
-          return idExists
-            ? // @ts-ignore
-              addresses[id][exp.strings[0]][exp.strings[1]]
-              ? //@ts-ignore
-                '8' + addresses[id][exp.strings[0]][exp.strings[1]].replace(/\D/g, '').slice(1)
+          return !isUndefined(addresses[id])
+            ? addresses[id][exp.strings[0]][exp.strings[1]]
+              ? '8' + addresses[id][exp.strings[0]][exp.strings[1]].replace(/\D/g, '').slice(1)
               : ''
             : ''
         }
-        //@ts-ignore
-        return idExists ? addresses[id][exp.strings[0]][exp.strings[1]] : ''
+        // @ts-ignore
+        return !isUndefined(addresses[id]) ? addresses[id][exp.strings[0]][exp.strings[1]] : ''
       } else if (exp.strings[0] === 'address') {
-        //@ts-ignore
-        return idExists ? addresses[id][exp.strings[0]] : ''
+        return !isUndefined(addresses[id]) ? addresses[id][exp.strings[0]] : ''
       }
     } else if (exp.type === 'additionals') {
       return idExists
