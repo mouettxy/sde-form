@@ -10,7 +10,7 @@ v-card.order-preview(:class='{"mobile": isMobile}')
       v-timeline(dense)
         v-timeline-item.order-preview__buttons(icon='mdi-check')
           v-card.pa-2
-            v-btn.my-2(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
+            v-btn.my-2(color='primary', block, @click='sendOrder', :disabled='isOrderSending') {{$t("orderPreview.sendOrder")}}
             add-order-dialog(@save-start='closePreview')
               template(#buttons='{open}')
                 v-btn(color='primary', block, @click='open') {{ $t("orderField.btn") }}
@@ -36,13 +36,13 @@ v-card.order-preview(:class='{"mobile": isMobile}')
           address-prices-preview(:prices='prices', :routes='routes', :info='information', :user='user')
         v-timeline-item.order-preview__buttons(icon='mdi-check')
           v-card.pa-2
-            v-btn.my-2(color='primary', block, @click='sendOrder') {{$t("orderPreview.sendOrder")}}
+            v-btn.my-2(color='primary', block, @click='sendOrder', :disabled='isOrderSending') {{$t("orderPreview.sendOrder")}}
             add-order-dialog(@save-start='closePreview')
               template(#buttons='{open}')
                 v-btn(color='primary', block, @click='open') {{ $t("orderField.btn") }}
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins/'
 import { addressesModule, authModule } from '@/store'
@@ -62,6 +62,8 @@ import AddressPricesPreview from '@/components/order-preview/AddressPricesPrevie
   }
 })
 export default class OrderPreview extends Mixins(colors, breakpoints) {
+  public isOrderSending = false
+
   get information() {
     return cloneDeep(addressesModule.information)
   }
@@ -91,6 +93,8 @@ export default class OrderPreview extends Mixins(colors, breakpoints) {
   }
 
   async sendOrder() {
+    this.isOrderSending = true
+    this.$notification.warning('Идёт обработка запроса...')
     this.closePreview()
     const response = await addressesModule.sendOrder()
 
@@ -108,6 +112,7 @@ export default class OrderPreview extends Mixins(colors, breakpoints) {
         this.$notification.success(response.message)
         break
     }
+    this.isOrderSending = false
   }
 }
 </script>

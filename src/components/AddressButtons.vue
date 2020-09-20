@@ -2,11 +2,11 @@
 v-slide-y-transition
   .address-buttons
     template(v-if='pricesOverall')
-      v-btn(color='primary', block, @click='$emit("preview")', :disabled='inTour()')#tour-preview-btn {{ $t("orderButtons.preview") }}
-      v-btn(color='primary', block, @click='sendOrder', :disabled='inTour()')#tour-send-btn {{ $t("orderButtons.send") }}
+      v-btn(color='primary', block, @click='$emit("preview")', :disabled='inTour() || isOrderSending')#tour-preview-btn {{ $t("orderButtons.preview") }}
+      v-btn(color='primary', block, @click='sendOrder', :disabled='inTour() || isOrderSending')#tour-send-btn {{ $t("orderButtons.send") }}
       add-order-dialog
         template(#buttons='{open}')
-          v-btn(color='primary', block, @click='open', :disabled='inTour()')#tour-save-btn {{ $t("orderButtons.save") }}
+          v-btn(color='primary', block, @click='open', :disabled='inTour() || isOrderSending')#tour-save-btn {{ $t("orderButtons.save") }}
 </template>
 
 <script lang="ts">
@@ -21,6 +21,8 @@ import { addressesModule } from '@/store'
   }
 })
 export default class AddressButtons extends Vue {
+  public isOrderSending = false
+
   get pricesOverall() {
     if (addressesModule.prices) {
       return addressesModule.prices.overall > 0
@@ -34,6 +36,8 @@ export default class AddressButtons extends Vue {
   }
 
   async sendOrder() {
+    this.isOrderSending = true
+    this.$notification.warning('Идёт обработка запроса...')
     const response = await addressesModule.sendOrder()
 
     switch (response.status) {
@@ -50,6 +54,7 @@ export default class AddressButtons extends Vue {
         this.$notification.success(response.message)
         break
     }
+    this.isOrderSending = false
   }
 }
 </script>
