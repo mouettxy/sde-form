@@ -136,5 +136,97 @@
     },
     "carMarkup": 15,
     "quickMarkup": 20
+  },
+  "Ставрополь": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 75,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 100,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 20 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 18 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 16 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 30,
+      "buyout": 30,
+      "takeIn": 30,
+      "takeOut": 30,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
+  },
+  "Симферополь": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 75,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 100,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 20 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 18 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 16 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 30,
+      "buyout": 30,
+      "takeIn": 30,
+      "takeOut": 30,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
   }
 }
