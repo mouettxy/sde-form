@@ -97,10 +97,10 @@ class Price {
     }
 
     each(this.addresses, (e) => {
-      if (e.fields.buyin && !freePay) {
+      if (e.fields?.buyin && !freePay) {
         accumulate += this.settings.additionals.buyin
       }
-      if (e.fields.buyout && !freeCash) {
+      if (e.fields?.buyout && !freeCash) {
         accumulate += this.settings.additionals.buyout
       }
     })
@@ -127,15 +127,15 @@ class Price {
     }
 
     each(this.addresses, (e) => {
-      if (e.fields.takeIn && !freeIn) {
+      if (e.fields?.takeIn && !freeIn) {
         entries += 1
         accumulate += this.settings.additionals.takeIn
       }
-      if (e.fields.takeOut && !freeOut) {
+      if (e.fields?.takeOut && !freeOut) {
         entries += 1
         accumulate += this.settings.additionals.takeOut
       }
-      if (e.fields.bus) {
+      if (e.fields?.bus) {
         entries += 1
         accumulate += this.settings.additionals.bus
       }
@@ -151,7 +151,8 @@ class Price {
     let accumulate = 0
 
     each(this.addresses, (e) => {
-      accumulate += e.fields.bundles * this.settings.additionals.bundle
+      const bundles = e.fields?.bundles || 0
+      accumulate += bundles * this.settings.additionals.bundle
     })
 
     return accumulate
