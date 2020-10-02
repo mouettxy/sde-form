@@ -82,7 +82,12 @@
           v-col(cols='6')
             v-switch(:color='defaultInputColor', v-model='fields.takeIn', :label='$t("addressFields.takeInLabel")')
           v-col(cols='6')
-            v-switch(:color='defaultInputColor', v-model='fields.takeOut', :label='$t("addressFields.takeOutLabel")')
+            v-switch(
+              :color='defaultInputColor',
+              v-model='fields.takeOut',
+              :disabled='isLastAddress',
+              :label='$t("addressFields.takeOutLabel")'
+            )
           v-col(cols='12')
             v-switch(:color='defaultInputColor', v-model='fields.bus', :label='$t("addressFields.busLabel")')
       v-btn(block, text, @click='showFields')
@@ -94,7 +99,8 @@ import { Component, Mixins, Prop, Watch, Ref } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins'
 import { AddressFields as TAddressFields, OrderAddress } from '@/typings/order'
 import moment from 'moment'
-import { findIndex, findLastIndex, size as lodashSize, debounce } from 'lodash'
+import { findIndex, findLastIndex, size, debounce, last, isEqual } from 'lodash'
+
 import { addressesModule } from '@/store'
 
 import VDatetimePicker from '@/components/third-party/DatetimePicker.vue'
@@ -134,21 +140,25 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
     return addressesModule.addressList
   }
 
+  get isLastAddress() {
+    return isEqual(this.address, last(this.addressList))
+  }
+
   getTimeOffset() {
     const index = findIndex(this.addressList, { id: this.address.id })
     const lastIndex = findLastIndex(this.addressList)
-    const size = lodashSize(this.addressList)
+    const size_ = size(this.addressList)
 
-    if (size === 1 || index === 0) {
+    if (size_ === 1 || index === 0) {
       return 20
     }
 
-    if (size === 2 && index === 1) {
+    if (size_ === 2 && index === 1) {
       return 20 + 35
     }
 
     if (index === lastIndex) {
-      return 20 + 35 + (size - 2) * 25
+      return 20 + 35 + (size_ - 2) * 25
     }
 
     return 20 + index * 25
