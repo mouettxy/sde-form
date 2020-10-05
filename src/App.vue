@@ -7,7 +7,7 @@ v-app
     v-btn.text-lowercase.toolbar-logo(large, text, color='primary', href='https://sde.ru.com', target='_blank') sde
 
   v-navigation-drawer(v-model='menu', absolute, temporary).menu
-    v-list(dense).menu-links
+    v-list(nav).menu-links
       v-list-item-group
         v-list-item(href='https://api.sde.ru.com/client/cabinet.php', target='_blank')
           v-list-item-title {{ $t("menu.clientCabinet") }}
