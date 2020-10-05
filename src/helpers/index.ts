@@ -98,7 +98,7 @@ export const formatData = (
     форма_оплаты: !isNewUser(client) ? client.payment_form : '',
     промокод: !isNewUser(client) ? client.who_attracted : '',
     скидка: !isNewUser(client) ? client.discount : '',
-    условия_оплаты: !isNewUser(client) ? client.payment_type : '',
+    условия_оплаты: !isNewUser(client) ? client.payment_type : 'Нет отсрочки',
     кто_платит: info?.whoPays || '',
     кто_везёт: !isNewUser(client) ? (client.stop_delivery === '1' ? 'не возим' : '') : '',
     пробег: routes?.overallDistance || '',
