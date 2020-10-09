@@ -1,6 +1,7 @@
 import endpoints from './endpoints'
 import { reverse } from 'lodash'
 import { http, dadata, geocoder } from '@/plugins/axios'
+import axios from 'axios'
 
 export const publicKey = `
 -----BEGIN PUBLIC KEY-----
@@ -70,23 +71,22 @@ export const getSuggestions = async function(query: string) {
 }
 
 export const getLatLon = async function(address: string) {
-  const response = await geocoder.get('/3', {
+  const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
     params: {
-      q: address,
-      src: 'addr'
+      address: address,
+      key: 'AIzaSyCfgtxr_hEtON5EuNEoQA0vpJOSdXs-lJU'
     }
   })
 
-  let coordinates = response.data['result']['address'][0]['features'][0]['geometry']['geometries'][0]['coordinates']
+  const coordinates = response.data['results'][0]['geometry']['location']
 
   if (!(response.status === 200) || !coordinates) {
     return false
   }
 
-  coordinates = reverse(coordinates)
   return {
-    lat: coordinates[0],
-    lon: coordinates[1]
+    lat: coordinates.lat,
+    lon: coordinates.lng
   }
 }
 

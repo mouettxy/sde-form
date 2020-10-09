@@ -124,10 +124,8 @@ export default class AddressField extends Mixins(colors, breakpoints) {
       this.$notification.error(this.$t('addressField.errorAddressWithoutHome') as string)
       return
     }
-
     if (!this.value.suggestion.geo_lat || !this.value.suggestion.geo_lon) {
       const response = await api.getLatLon(this.value.detailedAddress)
-
       if (response) {
         this.value = {
           ...this.value,
