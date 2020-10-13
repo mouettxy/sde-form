@@ -236,9 +236,7 @@ export const formatData = (
       .format('LTS'),
     orderFromTime: fields(0).datetime || '',
     orderToTime: fields(size(addresses) - 1).datetime || '',
-    addresses: map(addresses, (e) => {
-      return { address: e.address, fields: e.fields }
-    }),
+    addresses: addresses,
     info: info,
     price: prices,
     route: routes,
