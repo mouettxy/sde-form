@@ -1,6 +1,5 @@
 import endpoints from './endpoints'
-import { reverse } from 'lodash'
-import { http, dadata, geocoder } from '@/plugins/axios'
+import { http, dadata } from '@/plugins/axios'
 import axios from 'axios'
 
 export const publicKey = `
@@ -56,6 +55,9 @@ export const getSuggestions = async function(query: string) {
     },
     {
       region: 'Севастополь'
+    },
+    {
+      region: 'Санкт-Петербург'
     }
   ]
   const response = await dadata.post(endpoints.addresses.suggestions, {
