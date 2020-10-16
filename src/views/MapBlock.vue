@@ -178,7 +178,7 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
           origin,
           waypoints,
           destination,
-          travelMode: 'WALKING'
+          travelMode: 'DRIVING'
         },
         (response: any, status: any) => {
           return callback(response, status)
@@ -247,7 +247,7 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
         this.lat = pos.coords.latitude
         this.lng = pos.coords.longitude
       },
-      (err) => {
+      () => {
         //console.debug(err.message)
         return false
       },
