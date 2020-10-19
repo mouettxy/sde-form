@@ -95,12 +95,12 @@
     "mileage": [
       {
         "expression": "<%= mileage <= 3 %>",
-        "price": 85,
+        "price": 95,
         "modifier": false
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 115,
+        "price": 125,
         "modifier": false
       },
       {
@@ -110,17 +110,63 @@
       },
       {
         "expression": "<%= 5 < mileage < 10 %>",
-        "price": "<%= mileage * 21 %>",
+        "price": "<%= mileage * 24 %>",
         "modifier": false
       },
       {
         "expression": "<%= 10 <= mileage < 20 %>",
-        "price": "<%= mileage * 19 %>",
+        "price": "<%= mileage * 22 %>",
         "modifier": false
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 17 %>",
+      "price": "<%= mileage * 20 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 15,
+    "quickMarkup": 20
+  },
+  "Санкт-Петербург": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 95,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 125,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 5 < mileage < 10 %>",
+        "price": "<%= mileage * 24 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= 10 <= mileage < 20 %>",
+        "price": "<%= mileage * 22 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
