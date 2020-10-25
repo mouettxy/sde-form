@@ -44,6 +44,7 @@
             v-text-field(
               v-model.number='fields.buyout',
               @focus='onFieldFocus',
+              :disabled="isBuyoutDisabled"
               :color='defaultInputColor',
               :label='$t("addressFields.buyoutLabel")',
               prepend-inner-icon='mdi-tray-minus',
@@ -101,7 +102,7 @@ import { AddressFields as TAddressFields, OrderAddress } from '@/typings/order'
 import moment from 'moment'
 import { findIndex, findLastIndex, size, debounce, last, isEqual } from 'lodash'
 
-import { addressesModule } from '@/store'
+import { addressesModule, authModule } from '@/store'
 
 import VDatetimePicker from '@/components/third-party/DatetimePicker.vue'
 
@@ -142,6 +143,22 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
 
   get isLastAddress() {
     return isEqual(this.address, last(this.addressList))
+  }
+
+  get isBuyoutDisabled() {
+    if (authModule.isNewUser) {
+      return false
+    }
+
+    if (!authModule.user || typeof authModule.user === 'string') {
+      return false
+    }
+
+    if (authModule.user.region === 'Краснодар') {
+      return false
+    }
+
+    return true
   }
 
   getTimeOffset() {
