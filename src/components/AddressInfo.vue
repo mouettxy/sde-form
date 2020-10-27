@@ -17,22 +17,14 @@ v-slide-y-transition
           v-switch(
             v-model='info.quick',
             :color='defaultInputColor',
-            :label='$t("addressInfo.quickLabelText") + $t("addressInfo.quickLabelPrice")'
+            :label='$t("addressInfo.quickLabelText")'
           )
-            template(#label, v-if='!isMobile')
-              | {{$t("addressInfo.quickLabelText")}}
-              br
-              | {{$t("addressInfo.quickLabelPrice")}}
         v-col(cols='12', lg='6', md='6')
           v-switch(
             v-model='info.car',
             :color='defaultInputColor',
-            :label='$t("addressInfo.carLabelText") + $t("addressInfo.carLabelPrice")'
+            :label='$t("addressInfo.carLabelText")'
           )
-            template(#label, v-if='!isMobile')
-              | {{$t("addressInfo.carLabelText")}}
-              br
-              | {{$t("addressInfo.carLabelPrice")}}
         v-col(cols='12', lg='6', md='6')
           v-radio-group(v-model='info.whoPays', :color='defaultInputColor')
             template(#label) {{$t("addressInfo.whoPaysTitle")}}
@@ -52,7 +44,6 @@ import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { colors, breakpoints } from '@/mixins'
 import { reduce, debounce } from 'lodash'
 import { authModule, addressesModule } from '@/store'
-import { parse } from 'date-fns'
 
 @Component
 export default class AddressInfo extends Mixins(colors, breakpoints) {
