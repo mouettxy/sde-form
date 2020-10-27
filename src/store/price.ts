@@ -191,7 +191,7 @@ class Price {
         return false
       }
 
-      let price = undefined
+      let price
 
       each(this.settings.mileage, (e) => {
         const templatedExpression = template(e.expression)({ mileage, rate, client: this.user })
