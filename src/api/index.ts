@@ -58,6 +58,9 @@ export const getSuggestions = async function(query: string) {
     },
     {
       region: 'Санкт-Петербург'
+    },
+    {
+      region: 'Крондштадт'
     }
   ]
   const response = await dadata.post(endpoints.addresses.suggestions, {
