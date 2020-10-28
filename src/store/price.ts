@@ -172,6 +172,8 @@ class Price {
       }
       let price = this.mileage(this.route.overallDistance, rate)
 
+      console.log(price)
+
       if (isNaN(price) || isNull(price) || isUndefined(price)) {
         price = 0
       }
@@ -205,6 +207,7 @@ class Price {
           }
 
           price = parseInt(templatedPrice)
+          console.log(price, 'mileage')
           return false
         }
       })
@@ -219,7 +222,11 @@ class Price {
           client: this.user
         })
 
-        return parseInt(tPriceFinally) * parseInt(tModifierFinally)
+        if (tModifierFinally !== 'false') {
+          return parseInt(tPriceFinally) * parseInt(tModifierFinally)
+        }
+
+        return parseInt(tPriceFinally)
       }
     } catch (e) {
       return 0
