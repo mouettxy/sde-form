@@ -71,7 +71,7 @@
   "addressInfo": {
     "commentLabel": "Комментарий",
     "commentHint": "Укажите любую дополнительную информацию к заказу.",
-    "quickLabelText": "Срочная доставка (Бесплатно)",
+    "quickLabelText": "Срочная доставка",
     "quickLabelPrice": "(+20% стоимости)",
     "carLabelText": "Требуется автомобиль (Бесплатно)",
     "carLabelPrice": "(+15% стоимости)",

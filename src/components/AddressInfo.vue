@@ -17,8 +17,12 @@ v-slide-y-transition
           v-switch(
             v-model='info.quick',
             :color='defaultInputColor',
-            :label='$t("addressInfo.quickLabelText")'
+            :label='$t("addressInfo.quickLabelText") + $t("addressInfo.quickLabelPrice")'
           )
+            template(#label, v-if='!isMobile')
+              | {{$t("addressInfo.quickLabelText")}}
+              br
+              | {{$t("addressInfo.quickLabelPrice")}}
         v-col(cols='12', lg='6', md='6')
           v-switch(
             v-model='info.car',
