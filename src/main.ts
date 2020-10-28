@@ -14,6 +14,9 @@ import vuetify from './plugins/vuetify'
 import i18n from './i18n'
 
 import store from './store'
+import moment from 'moment'
+
+moment.locale('ru')
 
 Vue.config.productionTip = false
 

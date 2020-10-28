@@ -77,15 +77,10 @@ export const formatData = (
   const processed = {
     комментарий_загрузки: '',
     месяц: moment()
-      .locale('ru')
       .startOf('month')
       .format('L'),
-    дата: moment()
-      .locale('ru')
-      .format('L'),
-    время_заявки: moment()
-      .locale('ru')
-      .format('LTS'),
+    дата: moment().format('L'),
+    время_заявки: moment().format('LTS'),
     время_подачи: fields(0).datetime || '',
     время_выполнения: fields(size(addresses) - 1).datetime || '',
     откуда: from,
@@ -225,15 +220,10 @@ export const formatData = (
 
   const modern = {
     month: moment()
-      .locale('ru')
       .startOf('month')
       .format('L'),
-    date: moment()
-      .locale('ru')
-      .format('L'),
-    orderTime: moment()
-      .locale('ru')
-      .format('LTS'),
+    date: moment().format('L'),
+    orderTime: moment().format('LTS'),
     orderFromTime: fields(0).datetime || '',
     orderToTime: fields(size(addresses) - 1).datetime || '',
     addresses: map(addresses, (e) => {

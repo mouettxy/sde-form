@@ -182,9 +182,7 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
   }
 
   updateTimeField() {
-    const m = moment()
-      .locale('ru')
-      .add(this.getTimeOffset(), 'm')
+    const m = moment().add(this.getTimeOffset(), 'm')
     this.date = `${m.format('L')} ${m.format('LT')}`
     this.fields.datetime = `${m.format('L')} ${m.format('LT')}`
     return `${m.format('L')} ${m.format('LT')}`
@@ -192,7 +190,7 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
 
   onDateChange() {
     this.isManuallyModified = true
-    const m = moment(this.date).locale('ru')
+    const m = moment(this.date)
     const dateTime = `${m.format('L')} ${m.format('LT')}`
     if (dateTime) {
       this.fields.datetime = dateTime
