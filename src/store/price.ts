@@ -172,8 +172,6 @@ class Price {
       }
       let price = this.mileage(this.route.overallDistance, rate)
 
-      console.log(price)
-
       if (isNaN(price) || isNull(price) || isUndefined(price)) {
         price = 0
       }
@@ -207,7 +205,6 @@ class Price {
           }
 
           price = parseInt(templatedPrice)
-          console.log(price, 'mileage')
           return false
         }
       })
