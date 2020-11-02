@@ -206,16 +206,18 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
 
           lodashEach(legs, (e) => {
             const distance = lodashRound(e.distance.value / 1000, 1)
-            const time = lodashRound((distance / 30) * 60)
+            const time = lodashRound(e.duration.value / 60)
             const timeString = time >= 60 ? `${lodashRound(time / 60)}ч. ${lodashRound(time % 60)} м.` : `${time} м.`
 
-            routeInfo.routes.push({
+            const route = {
               from: e.start_address,
               to: e.end_address,
               distance,
               time,
               timeString
-            })
+            }
+
+            routeInfo.routes.push(route)
             routeInfo.overallDistance += distance
             routeInfo.overallTime += time
             routeInfo.overallTimeString =
