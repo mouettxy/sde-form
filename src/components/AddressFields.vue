@@ -154,7 +154,7 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
       return false
     }
 
-    if (authModule.user.region === 'Краснодар' || authModule.user.region === 'Севастополь') {
+    if (authModule.user.region === 'Краснодар') {
       return false
     }
 
