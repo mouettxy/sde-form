@@ -187,48 +187,52 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
     }
   }
 
+  calculateRoute() {
+    this.getRoute(addressesModule.addresses, (response: any, status: any) => {
+      if (status === 'OK' && response) {
+        this.DirectionsRenderer.setDirections(response)
+
+        // making route info object
+        const route = response.routes[0]
+        const legs = route.legs
+        const routeInfo = {
+          routes: [],
+          overallDistance: 0,
+          overallTime: 0,
+          overallTimeString: undefined
+        } as any
+
+        lodashEach(legs, (e) => {
+          const distance = lodashRound(e.distance.value / 1000, 1)
+          const time = lodashRound(e.duration.value / 60)
+          const timeString = time >= 60 ? `${lodashRound(time / 60)}ч. ${lodashRound(time % 60)} м.` : `${time} м.`
+
+          const route = {
+            from: e.start_address,
+            to: e.end_address,
+            distance,
+            time,
+            timeString
+          }
+
+          routeInfo.routes.push(route)
+          routeInfo.overallDistance += distance
+          routeInfo.overallTime += time
+          routeInfo.overallTimeString =
+            routeInfo.overallTime >= 60
+              ? `${lodashRound(routeInfo.overallTime / 60)}ч. ${lodashRound(routeInfo.overallTime % 60)} м.`
+              : `${routeInfo.overallTime} м.`
+        })
+
+        addressesModule.UPDATE_ROUTES(routeInfo)
+      }
+    })
+  }
+
   renderRoute() {
     const addressesCount = (this.lastAddressesSize = lodashSize(addressesModule.addresses))
     if (addressesCount >= 2 && !isUndefined(addressesModule.addresses)) {
-      this.getRoute(addressesModule.addresses, (response: any, status: any) => {
-        if (status === 'OK' && response) {
-          this.DirectionsRenderer.setDirections(response)
-
-          // making route info object
-          const route = response.routes[0]
-          const legs = route.legs
-          const routeInfo = {
-            routes: [],
-            overallDistance: 0,
-            overallTime: 0,
-            overallTimeString: undefined
-          } as any
-
-          lodashEach(legs, (e) => {
-            const distance = lodashRound(e.distance.value / 1000, 1)
-            const time = lodashRound(e.duration.value / 60)
-            const timeString = time >= 60 ? `${lodashRound(time / 60)}ч. ${lodashRound(time % 60)} м.` : `${time} м.`
-
-            const route = {
-              from: e.start_address,
-              to: e.end_address,
-              distance,
-              time,
-              timeString
-            }
-
-            routeInfo.routes.push(route)
-            routeInfo.overallDistance += distance
-            routeInfo.overallTime += time
-            routeInfo.overallTimeString =
-              routeInfo.overallTime >= 60
-                ? `${lodashRound(routeInfo.overallTime / 60)}ч. ${lodashRound(routeInfo.overallTime % 60)} м.`
-                : `${routeInfo.overallTime} м.`
-          })
-
-          addressesModule.UPDATE_ROUTES(routeInfo)
-        }
-      })
+      this.calculateRoute()
     }
   }
 
@@ -265,6 +269,10 @@ export default class MapBlock extends Mixins(colors, breakpoints) {
         if (this.map.$mapObject && this.map.$mapObject.getZoom() <= 10) {
           this.map.$mapObject.setZoom(12)
         }
+      }
+
+      if (addressesModule.addresses.length >= 2 && !addressesModule.routes) {
+        this.calculateRoute()
       }
     }, 1000)
   }
