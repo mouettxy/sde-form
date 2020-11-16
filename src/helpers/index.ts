@@ -34,7 +34,7 @@ export const formatAddress = (address: OrderAddress) => {
       address.fields.takeIn ? 'занос' : false,
       address.fields.takeOut ? 'вынос' : false,
       address.fields.buyin ? `выкуп(${address.fields.buyin})` : false,
-      address.fields.buyout ? `выручка(${address.fields.buyout})` : false,
+      address.fields.buyout ? `контроль оплаты(${address.fields.buyout})` : false,
       address.fields.bundles ? `наборов ${address.fields.bundles}` : false
     ]),
     ', '

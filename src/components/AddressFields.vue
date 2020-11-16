@@ -146,19 +146,7 @@ export default class AddressFields extends Mixins(colors, breakpoints) {
   }
 
   get isBuyoutDisabled() {
-    if (authModule.isNewUser) {
-      return false
-    }
-
-    if (!authModule.user || typeof authModule.user === 'string') {
-      return false
-    }
-
-    if (authModule.user.region === 'Краснодар') {
-      return false
-    }
-
-    return true
+    return false
   }
 
   getTimeOffset() {
