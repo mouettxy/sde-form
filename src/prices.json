@@ -8,7 +8,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
@@ -54,7 +54,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
@@ -100,7 +100,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
@@ -146,7 +146,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
@@ -192,7 +192,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
@@ -238,7 +238,7 @@
       },
       {
         "expression": "<%= mileage > 3 && mileage <= 5 %>",
-        "price": 135,
+        "price": 145,
         "modifier": false
       },
       {
