@@ -18,7 +18,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -28,7 +28,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
@@ -64,7 +64,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -74,7 +74,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
@@ -110,7 +110,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -120,7 +120,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
@@ -156,7 +156,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -166,7 +166,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
@@ -202,7 +202,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -212,7 +212,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
@@ -248,7 +248,7 @@
       },
       {
         "expression": "<%= mileage > 5 && mileage < 10 %>",
-        "price": "<%= mileage * 26 %>",
+        "price": "<%= mileage * 28 %>",
         "modifier": false
       },
       {
@@ -258,7 +258,7 @@
       }
     ],
     "mileageFinally": {
-      "price": "<%= mileage * 22 %>",
+      "price": "<%= mileage * 20 %>",
       "modifier": false
     },
     "additionals": {
