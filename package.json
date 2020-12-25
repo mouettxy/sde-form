@@ -67,7 +67,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
     "prettier-plugin-pug": "^1.0.0-alpha.8",
-    "pug": "^3.0.0",
+    "pug": "2.0.0",
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
     "sass": "^1.19.0",
