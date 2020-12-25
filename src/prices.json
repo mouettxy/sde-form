@@ -274,5 +274,143 @@
     },
     "carMarkup": 0,
     "quickMarkup": 20
+  },
+  "Ростов": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 95,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 145,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 5 && mileage < 10 %>",
+        "price": "<%= mileage * 28 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage >= 10 && mileage < 20 %>",
+        "price": "<%= mileage * 24 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 20 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 0,
+    "quickMarkup": 20
+  },
+  "Новороссийск": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 95,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 145,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 5 && mileage < 10 %>",
+        "price": "<%= mileage * 28 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage >= 10 && mileage < 20 %>",
+        "price": "<%= mileage * 24 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 20 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 0,
+    "quickMarkup": 20
+  },
+  "Сочи": {
+    "mileage": [
+      {
+        "expression": "<%= mileage <= 3 %>",
+        "price": 95,
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 3 && mileage <= 5 %>",
+        "price": 145,
+        "modifier": false
+      },
+      {
+        "expression": "<%= !isNaN(rate) && rate > 0 %>",
+        "price": "<%= mileage * rate %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage > 5 && mileage < 10 %>",
+        "price": "<%= mileage * 28 %>",
+        "modifier": false
+      },
+      {
+        "expression": "<%= mileage >= 10 && mileage < 20 %>",
+        "price": "<%= mileage * 24 %>",
+        "modifier": false
+      }
+    ],
+    "mileageFinally": {
+      "price": "<%= mileage * 20 %>",
+      "modifier": false
+    },
+    "additionals": {
+      "entries": 5,
+      "entriesDiscount": 10,
+      "buyin": 35,
+      "buyout": 35,
+      "takeIn": 35,
+      "takeOut": 35,
+      "bus": 75,
+      "bundle": 5,
+      "extraPoint": 20
+    },
+    "carMarkup": 0,
+    "quickMarkup": 20
   }
 }
